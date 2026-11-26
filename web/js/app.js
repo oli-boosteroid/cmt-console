@@ -1076,9 +1076,6 @@
       bg(window.CONSOLE.get("/reports?all=1").then(function (list) {
         if (Array.isArray(list)) D.reports = list;   // admin -> all; member -> own
       }, function () { /* failed: the list stays empty */ })),
-      bg(window.CONSOLE.get("/identity-console-only").then(function (d) {
-        if (d) state.identityConsoleOnly = !!d.enabled;                    // Identity source authority 
-      }, function () {})),
       bg(window.CONSOLE.get("/templates").then(function (list) {
         if (Array.isArray(list)) D.templates = list;   // server is authoritative live (even if empty)
       }, function () {})),
@@ -8100,11 +8097,10 @@
       '<button class="btn primary" data-act="list-save" data-key="ignored-reddit" style="margin-top:10px">' + ic("check", "ico-sm") + "Save</button>");
 
     /* Discord notification recipients + Identity authority . */
-    var discordRecipients = panel("discord", "Discord recipients & Identity", (D.moderatorsDiscord || []).length || null,
+    var discordRecipients = panel("discord", "Discord recipients", (D.moderatorsDiscord || []).length || null,
       '<div class="section-note" style="margin-bottom:8px">Extra Discord accounts (name or id, one per line) that should get moderator-mention notifications in addition to the team profiles - use this for custom recipients not tied to a person.</div>' +
       '<textarea class="f-input" data-list-key="moderators-discord" style="min-height:76px" placeholder="One Discord name or id per line">' + esc((D.moderatorsDiscord || []).join("\n")) + "</textarea>" +
-      '<button class="btn primary" data-act="list-save" data-key="moderators-discord" style="margin-top:10px">' + ic("check", "ico-sm") + "Save recipients</button>" +
-      '<div class="nrow" style="margin-top:16px"><span class="ntitle">Use console Identity only<span class="muted" style="display:block;font-weight:400;font-size:12px">Ignore the .env lists IGNORED_USERS and MODERATORS: only the console decides which Reddit users and Discord moderators are ours. Jira and Slack accounts always come from the console</span></span><span class="nctl">' + nToggle(!!state.identityConsoleOnly, "identity-console-only") + "</span></div>");
+      '<button class="btn primary" data-act="list-save" data-key="moderators-discord" style="margin-top:10px">' + ic("check", "ico-sm") + "Save recipients</button>");
 
     /* Permanent whitelist for the Discord image ratelimit (the image-spam alert never fires for these). */
     var imageWhitelist = panel("shield", "Discord - image ratelimit whitelist", (D.imageWhitelistDiscord || []).length || null,
@@ -8442,15 +8438,6 @@
     var target = { "ignored-reddit": "ignoredReddit", "image-whitelist-discord": "imageWhitelistDiscord" }[key] || "moderatorsDiscord";
     window.CONSOLE.put("/" + key, { users: items }).then(function (r) {
         if (r && r.ok) { D[target] = r.users; render(); toast("Saved"); } else toast("Save failed");
-      }, function () { toast("Save failed"); });
-  }
-  /* Toggle whether the console is the only source for the bot's Reddit ignore list and Discord moderators:
-     ON drops the .env lists IGNORED_USERS / MODERATORS. Jira and Slack accounts always come from the console. */
-  function toggleIdentityConsoleOnly() {
-    var want = !state.identityConsoleOnly;
-    window.CONSOLE.put("/identity-console-only", { enabled: want }).then(function (r) {
-        state.identityConsoleOnly = !!(r && r.enabled); render();
-        toast(state.identityConsoleOnly ? "Console Identity is now the only source" : "Reverted to console + .env fallback");
       }, function () { toast("Save failed"); });
   }
   /* Show a freshly-created / regenerated first-run invite code so the admin can copy + share it. The
@@ -9555,7 +9542,6 @@
       if (a === "events-cat") { state.eventsCat = act.getAttribute("data-cat") || ""; render(); return; }
       if (a === "add-maintenance") { openAddMaintenance(act.getAttribute("data-ctx-type"), act.getAttribute("data-ctx-ref")); return; }
       if (a === "list-save") { saveExclusionList(act.getAttribute("data-key")); return; }
-      if (a === "identity-console-only") { toggleIdentityConsoleOnly(); return; }
       if (a === "reminders-save") {
         var _rc = {};
         Array.prototype.forEach.call(document.querySelectorAll("[data-rem]"), function (el) {

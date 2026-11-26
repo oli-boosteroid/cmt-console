@@ -2134,26 +2134,6 @@ def set_image_whitelist_discord():
     return jsonify({"ok": True, "users": _set_list("image_whitelist_discord", data.get("users"))}), 200
 
 
-# Identity source authority: when ON, the bot uses ONLY the console Identity + console
-# lists and ignores the .env fallback (MODERATORS / SLACK_USER_IDS / JIRA_OUR_USER_IDS / ...), so a
-# stale .env entry cannot leak a non-Identity account into mentions/notifications.
-@console_state_bp.route("/identity-console-only", methods=["GET"])
-@login_required
-def get_identity_console_only():
-    d = config_col.find_one({"key": "identity_console_only"})
-    return jsonify({"enabled": bool((d or {}).get("value"))}), 200
-
-
-@console_state_bp.route("/identity-console-only", methods=["PUT"])
-@admin_required
-def set_identity_console_only():
-    data = request.get_json(silent=True) or {}
-    val = bool(data.get("enabled"))
-    config_col.update_one({"key": "identity_console_only"},
-                          {"$set": {"key": "identity_console_only", "value": val}}, upsert=True)
-    return jsonify({"ok": True, "enabled": val}), 200
-
-
 # ---------------------------------------------------------------------------
 # Per-user notifications: settings + Web Push subscriptions + Telegram linking.
 # The console stores what each user wants; the bot's delivery engine
