@@ -5,14 +5,14 @@ MongoDB container, and adds **no new inbound port**. People reach the console on
 company Google account. The console holds **no Jira, Slack, Discord, Telegram or Reddit key**.
 
 Status: the bot already runs on the VM from `~/cmt-boost` (still on the old database). The console is cloned to
-`~/cmt-console` but not started. Our own MongoDB is **planned** (section "MongoDB (planned)").
+`~/cmt-console` but not started. Our own MongoDB is ready in the bot repo (`deploy/mongo/`), not started yet.
 
 ## What runs where
 
 | Container | From | Reachable from outside | Mongo user | Secrets it holds |
 |---|---|---|---|---|
 | `cmt-boost` (bot) | bot repo `docker-compose.yml` | `:7000` for Slack only | `cmt_bot` | all integration keys (in `.env`, mounted read-only, not in the image) |
-| `cmt-mongo` (planned) | bot repo, its own compose project | no (Docker network only) | - | admin password, replica-set key |
+| `cmt-mongo` | bot repo `deploy/mongo/`, its own compose project | no (Docker network only) | - | admin password, replica-set key |
 | `cmt-console` | console repo `docker-compose.vm.yml` | only via the tunnel/proxy; console pages after Google sign-in, Known Issues pages public | `cmt_console` | session key, Google OAuth client, R2, Jira **gateway** token |
 | `cmt-cloudflared` (option A) | `--profile tunnel` | outbound connection only | - | tunnel token |
 
@@ -33,53 +33,75 @@ Status: the bot already runs on the VM from `~/cmt-boost` (still on the old data
 |---|---|
 | bot | ~0.7 GB in use |
 | console | 512 MB |
-| MongoDB (planned) | WiredTiger cache 0.5 GB, container limit ~1.2 GB |
+| MongoDB | WiredTiger cache 0.5 GB, container limit 1.2 GB |
 | cloudflared (option A) | 128 MB |
 
-About 1 GB stays free for the system. Heavy data (images) belongs in R2, not in Mongo, so the working set fits
-the small cache.
+About 1 GB stays free for the system. Data today: ~0.17 GB main (Atlas) + ~0.75 GB snapshots (Railway), so the
+whole database is under 1 GB and the hot part fits the cache. Heavy data (images) belongs in R2, not in Mongo.
 
 ## Order of the first deployment
 
 1. **Answers / setup**: option A or B for access, a DNS name, OAuth client "Internal" in the company Google Cloud.
-2. **MongoDB**: start `cmt-mongo` and create the users (section below).
+2. **MongoDB**: `cd ~/cmt-boost/deploy/mongo && ./init.sh` (section below), then the nightly dump in root's crontab.
 3. **Data**: `cmt-boost-main/additional_scripts/migrate_to_vm_mongo.sh rehearse`, then `compare_counts.py`; in the
    maintenance window `... final` (bot and console stopped), `compare_counts.py` again.
-4. **Bot**: put `JIRA_GATEWAY_TOKEN` (new random value) and the `cmt_bot` URIs into the bot's `.env`, `~/deploy.sh`.
+4. **Bot**: put `JIRA_GATEWAY_TOKEN` (new random value) and the `cmt_bot` URIs printed by `init.sh` into the bot's
+   `.env` (`MONGODB_URI`, `SNAPSHOT_MONGODB_URI`; `MONGODB_DATABASE=reddit_posts`), `~/deploy.sh`.
 5. **Console**: fill `deploy/console.env` from `deploy/console.env.example` (`chmod 600 deploy/*.env`), run
    `~/deploy-console.sh` (`CMT_TUNNEL=1` for option A).
 6. **Smoke test** (below). Then switch off Railway and, after 14 days, delete Atlas + the Railway Mongo.
 
-## MongoDB (planned)
+## MongoDB
 
-Our own MongoDB container on the same VM:
+Our own MongoDB container, defined in the bot repo `deploy/mongo/`:
 
-- `mongo:7.0`, container `cmt-mongo`, on the Docker network `cmt-net`; port 27017 is **not** published, so only our
-  containers reach it (`mongodb://<user>:<password>@cmt-mongo:27017/<db>?authSource=admin&replicaSet=rs0`).
-- Its own compose project (not the bot's `docker-compose.yml`), so `~/deploy.sh` and `~/deploy-console.sh` never
-  stop or recreate the database; `restart: unless-stopped` brings it back after a VM reboot.
-- Single-node replica set `rs0` (change streams: console actions run at once instead of 3 s polling), auth on,
-  replica-set key file, data in a named Docker volume (outside the git checkout).
-- `--wiredTigerCacheSizeGB 0.5`, memory limit, log rotation; admin password and key in an env file on the VM only.
+- `mongo:4.4.6` (pinned: newer MongoDB needs the AVX CPU instructions, which this VM does not provide reliably; our
+  code uses only queries and change streams that 4.4 supports), container `cmt-mongo`, on the Docker network
+  `cmt-net`; port 27017 is **not** published, so only our containers reach it. The 4.4 image has the legacy `mongo`
+  shell, not `mongosh`. 4.4 no longer gets security updates; this is acceptable only because the database is not
+  reachable from outside Docker.
+- A compose project of its own: `~/deploy.sh` and `~/deploy-console.sh` never stop or recreate the database;
+  `restart: unless-stopped` brings it back after a VM reboot. Data lives in the Docker volume `cmt-mongo-data`
+  (outside the git checkout). Never run `docker compose down -v` in `deploy/mongo` (it deletes the volume).
+- Single-node replica set `rs0` (change streams: console actions run at once), auth on, replica-set key file,
+  `--wiredTigerCacheSizeGB 0.5`, memory limit 1.2 GB, log rotation.
 - Databases: `reddit_posts` (main) and `reddit_snapshots` (Reddit snapshots + images).
-- Backups: none for now (owner's decision, 2026-11-26). A daily dump onto the same VM is an option; it protects
-  against deleted data, not against a lost disk.
 
-Users (mongosh as the admin):
+First start (once):
 
-```javascript
-const main = "reddit_posts", snap = "reddit_snapshots";
-db.getSiblingDB("admin").createUser({ user: "cmt_bot", pwd: passwordPrompt(),
-  roles: [{ role: "readWrite", db: main }, { role: "readWrite", db: snap }] });
+```bash
+cd ~/cmt-boost/deploy/mongo && ./init.sh
+```
 
-// Console: for now the same rights as today (it still writes its own state and some bot data).
-// Narrowed step by step as those writes move to the bot.
-db.getSiblingDB("admin").createUser({ user: "cmt_console", pwd: passwordPrompt(),
-  roles: [{ role: "readWrite", db: main }, { role: "read", db: snap }] });
+It checks the network, creates the key file and random passwords
+(`deploy/mongo/mongo.env`, chmod 600, ignored by git), starts the container, sets up `rs0` and creates the users:
+
+| User | Rights |
+|---|---|
+| `admin` | root, for maintenance and the data move only |
+| `cmt_bot` | readWrite on `reddit_posts` and `reddit_snapshots` |
+| `cmt_console` | readWrite on `reddit_posts`, read on `reddit_snapshots` (narrowed later as console writes move to the bot) |
+| `cmt_backup` | backup role, used by the nightly dump |
+
+At the end it prints the connection strings for the bot `.env` and `deploy/console.env`, plus the crontab line.
+
+Nightly dump onto the same VM (`deploy/mongo/dump.sh`): one gzip archive in `/var/backups/cmt-mongo`, the newest 3
+are kept. It protects against deleted or broken data, not against losing the VM disk (owner's decision: no copy
+off the VM for now). Restore instructions are in the header of `dump.sh`.
+
+```bash
+sudo crontab -e        # add:  30 3 * * * /home/<you>/cmt-boost/deploy/mongo/dump.sh >> /var/log/cmt-mongo-dump.log 2>&1
+sudo ~/cmt-boost/deploy/mongo/dump.sh       # one dump now, to check it works
 ```
 
 The bot refuses any queued console action without a signed-in author, except the few system actions listed in
 `cmt-boost-main/services/action_policy.py`.
+
+Data move (Atlas + Railway -> `cmt-mongo`): `~/.cmt_migrate.env` (chmod 600) with `SRC_MONGODB_URI`,
+`SRC_SNAPSHOT_URI` and `DST_URI=mongodb://admin:<MONGO_ADMIN_PASSWORD>@cmt-mongo:27017/?authSource=admin&replicaSet=rs0`,
+then `additional_scripts/migrate_to_vm_mongo.sh rehearse` (copies into `*_rehearsal` databases) and the printed
+`compare_counts.py` command; in the maintenance window `... final` with the bot stopped, then the new URIs in the
+bot `.env`, `~/deploy.sh`.
 
 ## Routing
 
@@ -108,5 +130,6 @@ Option B, DevOps reverse proxy: everything to `127.0.0.1:8080` (published on 127
    `[JiraGateway] GET /rest/api/2/issue/... -> 200 (console user ...)`.
 3. `https://<host>/knownissues` opens without sign-in; `https://<host>/api/console/notes` without sign-in -> 401 or the
    Access login page.
-4. On the VM: `ss -tlnp` shows 8080 only on 127.0.0.1, nothing on 7001 or 27017 outside Docker.
+4. On the VM: `ss -tlnp` shows 8080 only on 127.0.0.1, nothing on 7001 or 27017 outside Docker;
+   `sudo docker ps` shows `cmt-mongo` as healthy.
 5. Stop switch: `sudo docker compose -f docker-compose.vm.yml stop` in `~/cmt-console` - the bot keeps working.

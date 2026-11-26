@@ -31,13 +31,7 @@ die() { printf '\n\033[1;31mx %s\033[0m\n' "$*" >&2; exit 1; }
 cd "$REPO_DIR"
 [ -f deploy/console.env ] || die "deploy/console.env missing - copy it from deploy/console.env.example and fill it in"
 $DOCKER network inspect cmt-net >/dev/null 2>&1 || die "network cmt-net not found - deploy the bot first"
-# Mongo in Docker on its own network: join it (MONGO_NETWORK in deploy/console.env)
-MONGO_NETWORK="${MONGO_NETWORK:-$(sed -n 's/^MONGO_NETWORK=//p' deploy/console.env | tr -d ' \r')}"
-if [ -n "$MONGO_NETWORK" ]; then
-  $DOCKER network inspect "$MONGO_NETWORK" >/dev/null 2>&1 || die "Docker network $MONGO_NETWORK not found"
-  export MONGO_NETWORK
-  DC="$DC -f docker-compose.mongo.yml"
-fi
+$DOCKER inspect cmt-mongo >/dev/null 2>&1 || die "container cmt-mongo not found - start the database first (bot repo deploy/mongo/init.sh)"
 
 GIT_TOKEN="$(tr -d ' \t\r\n' < "$TOKEN_FILE")"; export GIT_TOKEN
 c "Pulling $BRANCH"
