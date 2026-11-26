@@ -1,0 +1,14 @@
+{
+  "name": "CMT Console",
+  "short_name": "CMT Console",
+  "description": "Community team console for Reddit, Discord, and Jira.",
+  "start_url": "/console/",
+  "scope": "/console/",
+  "display": "standalone",
+  "background_color": "#09090B",
+  "theme_color": "#D97706",
+  "icons": [
+    { "src": "/console/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/console/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

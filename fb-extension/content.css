@@ -1,0 +1,15 @@
+.cmt-uid { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; background: #f59e0b; color: #111 !important; font: 600 11px/1.6 system-ui, sans-serif; text-decoration: none !important; vertical-align: middle; }
+.cmt-uid:hover { background: #fbbf24; }
+
+.cmt-uid-wrap { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; vertical-align: middle; }
+.cmt-uid-wrap .cmt-uid { margin-left: 0; }
+button.cmt-uid { border: 0; cursor: pointer; }
+.cmt-uid-none { background: #3f3f46 !important; color: #e4e4e7 !important; }
+.cmt-uid-none:hover { background: #52525b !important; }
+.cmt-uid-edit { border: 0; background: none; color: #a1a1aa; font: 11px system-ui, sans-serif; cursor: pointer; text-decoration: underline; padding: 0; }
+
+#cmt-update { position: fixed; z-index: 2147483647; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 92vw; padding: 10px 14px; border-radius: 10px; background: #18181b; color: #f4f4f5; font: 13px/1.4 system-ui, sans-serif; box-shadow: 0 6px 24px rgba(0,0,0,.4); border: 1px solid #f59e0b; }
+#cmt-update button { border: 0; border-radius: 6px; padding: 5px 10px; background: #f59e0b; color: #111; font-weight: 600; cursor: pointer; }
+#cmt-update button[data-a="x"] { background: none; color: #a1a1aa; font-size: 16px; padding: 0 4px; }
+#cmt-update span { color: #a1a1aa; }
+

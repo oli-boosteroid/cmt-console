@@ -1,0 +1,15 @@
+# Joins the console and the public Known Issues service to the Docker network of the VM's existing MongoDB
+# container (port 27017 is not published on the host; the host in MONGODB_URI is the container name).
+# deploy/deploy-console.sh adds this file when MONGO_NETWORK is set in deploy/console.env.
+# Find the network:  sudo docker inspect mongodb --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+
+services:
+  cmt-console:
+    networks: [cmt, mongo]
+  cmt-knownissues:
+    networks: [cmt, mongo]
+
+networks:
+  mongo:
+    name: ${MONGO_NETWORK:?set MONGO_NETWORK in deploy/console.env}
+    external: true

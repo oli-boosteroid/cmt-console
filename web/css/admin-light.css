@@ -1,0 +1,124 @@
+/* ============================================================
+   CMT Console · Light theme = the admin panel's default light
+   (data-admin-theme="default", not .dark, palette "chromatic").
+   Layout and shapes are shared with Glassy and dark (glassy.css);
+   this file supplies the admin's light surfaces: dotted grey page,
+   white sheets with soft shadows, frosted topbar, boxed sidebar
+   groups, amber primary. Loaded last. Fonts stay IBM Plex.
+   ============================================================ */
+
+[data-theme="light"] {
+  color-scheme: light;
+  --gray-400: oklch(.705 .015 286.067);
+  --gray-500: oklch(.552 .016 285.938);
+  --gray-600: oklch(.442 .017 285.786);
+  --gray-700: oklch(.37 .013 285.805);
+  --gray-950: oklch(.141 .005 285.823);
+  --primary-500: oklch(.769 .188 70.08);
+  --primary-600: oklch(.666 .179 58.318);
+  --primary-700: oklch(.555 .163 48.998);
+  --ring: rgb(9 9 11 / .06);
+  --ring-field: rgb(9 9 11 / .12);
+
+  --lg-gap: 12px;
+  --lg-radius-xl: 28px;
+  --lg-radius-lg: 22px;
+  --lg-radius-md: 14px;
+  --lg-spring: cubic-bezier(.22, 1, .36, 1);
+  --lg-settle: cubic-bezier(.22, 1, .36, 1);
+  --lg-glass: rgb(237 239 243 / .95);
+  --lg-glass-solid: #ffffff;
+  --lg-sticky: #ffffff;
+  --lg-sheet: #ffffff;
+  --lg-sheet-inner: rgb(9 9 11 / .02);
+  --lg-field: #ffffff;
+  --lg-hover: rgb(9 9 11 / .04);
+  --lg-line: rgb(9 9 11 / .08);
+  --lg-sheen: linear-gradient(transparent, transparent);
+  --lg-rim-strong: rgb(9 9 11 / .08);
+  --lg-rim-faint: rgb(9 9 11 / .04);
+  --lg-rim: inset 0 0 0 1px var(--ring);
+  --lg-lift: 0 1px 2px rgb(0 0 0 / .08), 0 4px 16px rgb(0 0 0 / .08);
+  --lg-lift-high: 0 0 0 1px var(--ring), 0 20px 40px -12px rgb(0 0 0 / .25);
+  --lg-blur: blur(12px) saturate(1.2);
+  --lg-blur-strong: blur(12px) saturate(1.2);
+
+  --bg: transparent;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card-2: rgb(9 9 11 / .04);
+  --border: var(--lg-line);
+  --border-strong: rgb(9 9 11 / .14);
+  --field-edge: var(--ring-field);
+  --text: var(--gray-950);
+  --muted: var(--gray-600);
+  --faint: var(--gray-500);
+  --accent: var(--primary-700);
+  --accent-strong: var(--primary-700);
+  --accent-soft: color-mix(in oklab, var(--primary-500) 14%, transparent);
+  --on-accent: #fff;
+  --btn-fill: var(--primary-600);
+  --btn-fill-hover: var(--primary-500);
+  --btn-fill-active: var(--primary-700);
+  --on-btn-fill: #fff;
+  --head-bar: var(--primary-500);
+  --desk-deep: transparent;
+  --desk-raise: rgb(9 9 11 / .03);
+  --desk-hover: var(--lg-hover);
+  --desk-line: var(--lg-line);
+  --desk-sticky: #ffffff;
+  --sticky-bg: #ffffff;
+}
+
+/* the admin's dotted page */
+[data-theme="light"] body {
+  background-color: #dcdfe4 !important;
+  background-image: radial-gradient(circle, #b9bec8 .7px, transparent .7px), linear-gradient(135deg, rgb(210 215 225 / .6), rgb(225 228 232 / .2) 35%, rgb(215 218 225 / .4) 65%, rgb(220 223 228 / .1)) !important;
+  background-size: 20px 20px, 100% 100% !important;
+  background-attachment: fixed !important;
+}
+[data-theme="light"] .topbar { background: rgb(237 239 243 / .95) !important; box-shadow: 0 0 0 1px rgb(200 204 212 / .5), 0 1px 3px rgb(0 0 0 / .06), 0 6px 16px rgb(0 0 0 / .05) !important; }
+[data-theme="light"] .topbar::after { display: none; }
+[data-theme="light"] .rail { background: rgb(237 239 243 / .9) !important; }
+
+[data-theme="light"] .nav-btn { color: var(--gray-700) !important; }
+[data-theme="light"] .nav-btn .ico { color: var(--gray-500) !important; }
+[data-theme="light"] .nav-btn:hover { color: var(--gray-950) !important; }
+[data-theme="light"] .nav-btn.active { background: rgb(9 9 11 / .05) !important; color: var(--primary-700) !important; box-shadow: none !important; }
+[data-theme="light"] .nav-btn.active .ico, [data-theme="light"] .nav-btn.active .nbadge { color: var(--primary-700) !important; }
+[data-theme="light"] .nbadge { color: var(--gray-600) !important; }
+
+/* flat buttons in the shared pill shape */
+[data-theme="light"] .btn {
+  background-image: none !important; background-color: #fff !important; color: var(--gray-950);
+  box-shadow: inset 0 0 0 1px var(--ring-field), 0 1px 2px rgb(0 0 0 / .05) !important; filter: none !important; text-shadow: none;
+}
+[data-theme="light"] .btn:not([disabled]):hover { background-color: #f4f4f5 !important; scale: 1; }
+[data-theme="light"] .btn:not([disabled]):active { scale: .98; }
+[data-theme="light"] .btn.primary { background-color: var(--primary-600) !important; color: #fff !important; box-shadow: 0 1px 2px rgb(0 0 0 / .1) !important; }
+[data-theme="light"] .btn.primary:hover { background-color: var(--primary-500) !important; }
+[data-theme="light"] .btn.mods { background-color: color-mix(in oklab, var(--primary-500) 12%, #fff) !important; color: var(--primary-700) !important; box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-600) 35%, transparent) !important; }
+[data-theme="light"] .btn.danger { background-color: oklch(.577 .245 27.325) !important; color: #fff !important; box-shadow: none !important; }
+[data-theme="light"] .btn.ghost { background-color: transparent !important; box-shadow: none !important; color: var(--gray-600); }
+[data-theme="light"] .btn.ghost:hover { background-color: rgb(9 9 11 / .05) !important; color: var(--gray-950); }
+
+/* stat tiles: the admin's bordered light tiles */
+[data-theme="light"] .sstat { box-shadow: 0 0 0 1px rgb(0 0 0 / .06), 0 2px 4px rgb(0 0 0 / .06), 0 8px 20px rgb(0 0 0 / .06), inset 0 1px rgb(255 255 255 / .8) !important; }
+
+/* accents */
+[data-theme="light"] .pane.list .row.active, [data-theme="light"] .tg-list .row.active { background: color-mix(in oklab, var(--primary-500) 10%, #fff) !important; }
+[data-theme="light"] .row > .av.unread-av { background: var(--primary-600) !important; color: #fff !important; }
+[data-theme="light"] .thread .msg.out .bubble {
+  background: color-mix(in oklab, var(--primary-500) 12%, #fff) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-600) 25%, transparent) !important;
+}
+[data-theme="light"] .thread .msg .bubble { border-left-color: rgb(9 9 11 / .18) !important; }
+[data-theme="light"] .composer { box-shadow: inset 0 0 0 1px var(--ring-field), 0 1px 2px rgb(0 0 0 / .05) !important; }
+[data-theme="light"] .composer:focus-within { box-shadow: inset 0 0 0 2px var(--primary-600) !important; }
+[data-theme="light"] :is(.filter.active, .home-tab.active, .subtabs .stab.active, .ctx-tab.on) { background: rgb(9 9 11 / .05) !important; color: var(--primary-700) !important; box-shadow: none !important; }
+[data-theme="light"] .filter.active .fcount { color: var(--primary-700) !important; }
+[data-theme="light"] :is(input, select, textarea):focus { border-color: var(--primary-600) !important; }
+[data-theme="light"] .qrow:nth-child(2n) { background: rgb(9 9 11 / .02) !important; }
+[data-theme="light"] select option { background: #fff; color: var(--gray-950); }
+[data-theme="light"] .fb-fab { clip-path: none !important; border-radius: 999px !important; background: var(--primary-600) !important; color: #fff !important; box-shadow: 0 8px 20px -8px rgb(0 0 0 / .35) !important; }
+[data-theme="light"] .page-head h1, [data-theme="light"] .greeting { text-shadow: 0 1px 2px rgb(0 0 0 / .06); }

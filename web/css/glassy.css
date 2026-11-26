@@ -1,0 +1,548 @@
+/* ============================================================
+   CMT Console · Glassy theme = the admin panel's "liquid glass"
+   (data-admin-theme="liquid-glass", palette "chromatic", dark).
+   Ported from the admin stylesheet: drifting colour wallpaper, floating
+   topbar + sidebar sheets, sheen + rim + lift on every surface, liquid
+   pill buttons, glass dropdowns/modals. Loaded last; everything here is
+   scoped to [data-theme="glassy"], so dark and light are untouched.
+   Fonts stay IBM Plex (owner rule).
+   ============================================================ */
+
+[data-theme="glassy"] {
+  color-scheme: dark;
+  /* admin liquid-glass tokens (dark) */
+  --lg-gap: 12px;
+  --lg-radius-xl: 28px;
+  --lg-radius-lg: 22px;
+  --lg-radius-md: 14px;
+  --lg-spring: linear(0, .063, .206, .379, .549, .698, .817, .906, .968, 1.007, 1.028, 1.037, 1.038, 1.034, 1.028, 1.021, 1.015, 1.01, 1.006, 1.003, 1.001, .999, 1);
+  --lg-settle: linear(0, .06, .188, .335, .475, .598, .699, .779, .841, .887, .921, .946, .963, .975, .984, .99, .993, .996, .998, .999, 1);
+  --lg-wallpaper-base: #090d1c;
+  --lg-wallpaper-a: radial-gradient(38% 34% at 22% 24%, #2546b8 0%, transparent 100%), radial-gradient(34% 36% at 76% 22%, #7a2a97 0%, transparent 100%), radial-gradient(36% 34% at 50% 78%, #0c6a78 0%, transparent 100%);
+  --lg-wallpaper-b: radial-gradient(34% 32% at 74% 72%, #4a2bb0 0%, transparent 100%), radial-gradient(32% 34% at 24% 70%, #5a2470 0%, transparent 100%), radial-gradient(30% 30% at 52% 26%, #14609e 0%, transparent 100%);
+  --lg-glass: rgb(42 48 74 / .32);
+  --lg-glass-solid: rgb(24 29 48 / .82);
+  --lg-sticky: rgb(22 27 46 / .95);
+  --lg-sheet: rgb(20 25 44 / .58);
+  --lg-sheet-inner: rgb(255 255 255 / .04);
+  --lg-field: rgb(255 255 255 / .06);
+  --lg-hover: rgb(255 255 255 / .08);
+  --lg-line: rgb(255 255 255 / .09);
+  --lg-sheen: linear-gradient(155deg, rgb(255 255 255 / .07), transparent 42%);
+  --lg-rim-strong: rgb(255 255 255 / .5);
+  --lg-rim-faint: rgb(255 255 255 / .14);
+  --lg-rim: inset 0 1px 0 rgb(255 255 255 / .2), inset 1px 0 0 rgb(255 255 255 / .06), inset -1px 0 0 rgb(255 255 255 / .06), inset 0 -1px 0 rgb(255 255 255 / .08);
+  --lg-lift: 0 0 0 .5px rgb(0 0 0 / .4), 0 16px 38px -18px rgb(0 0 0 / .75);
+  --lg-lift-high: 0 0 0 .5px rgb(0 0 0 / .5), 0 30px 70px -22px rgb(0 0 0 / .85);
+  --lg-blur: blur(10px) saturate(170%);
+  --lg-blur-strong: blur(24px) saturate(170%);
+  /* admin "chromatic" primary */
+  --primary-400: oklch(.7535 .1503 255.5);
+  --primary-500: oklch(.6827 .1701 255.5);
+  --primary-600: oklch(.5978 .1691 255.5);
+
+  /* console tokens mapped onto the glass system */
+  --bg: transparent;
+  --surface: var(--lg-sheet);
+  --card: rgb(255 255 255 / .05);
+  --card-2: rgb(255 255 255 / .08);
+  --border: var(--lg-line);
+  --border-strong: rgb(255 255 255 / .16);
+  --field-edge: rgb(255 255 255 / .22);
+  --text: #F2F4FB;
+  --muted: #B3BAD3;
+  --faint: #959DBA;
+  --accent: var(--primary-400);
+  --accent-strong: var(--primary-400);
+  --accent-soft: color-mix(in oklab, var(--primary-500) 18%, transparent);
+  --on-accent: #fff;
+  --btn-fill: color-mix(in oklab, var(--primary-600) 88%, transparent);
+  --btn-fill-hover: color-mix(in oklab, var(--primary-500) 92%, transparent);
+  --btn-fill-active: var(--primary-600);
+  --on-btn-fill: #fff;
+  --desk-deep: transparent;
+  --desk-raise: var(--lg-field);
+  --desk-hover: var(--lg-hover);
+  --desk-line: var(--lg-line);
+  --desk-sticky: var(--lg-sticky);
+  --sticky-bg: var(--lg-sticky);
+  --overlay: rgb(2 4 14 / .5);
+  --dialog-bg: var(--lg-glass-solid);
+  --page-bg: transparent;
+}
+
+/* ---------- wallpaper: two drifting colour fields behind everything ---------- */
+html[data-theme="glassy"] { background-color: var(--lg-wallpaper-base); }
+[data-theme="glassy"] body, [data-theme="glassy"] .auth-gate { background: transparent !important; -webkit-font-smoothing: antialiased; }
+html[data-theme="glassy"]::before, html[data-theme="glassy"]::after {
+  content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+  filter: blur(36px); will-change: transform, opacity;
+}
+html[data-theme="glassy"]::before { background: var(--lg-wallpaper-a); animation: lg-drift-a 38s steps(228) infinite alternate; }
+html[data-theme="glassy"]::after  { background: var(--lg-wallpaper-b); animation: lg-drift-b 29s steps(174) infinite alternate; }
+@keyframes lg-drift-a { 0% { transform: translate3d(-5%, -3%, 0) rotate(-6deg) scale(1); } to { transform: translate3d(6%, 4%, 0) rotate(8deg) scale(1.12); } }
+@keyframes lg-drift-b { 0% { opacity: .45; transform: translate3d(6%, 4%, 0) rotate(7deg) scale(1.1); } to { opacity: 1; transform: translate3d(-6%, -4%, 0) rotate(-9deg) scale(.98); } }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .app, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .main, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .view, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split,
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ds-view, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ds-body, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rss-wrap, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rss-body { background: transparent !important; }
+
+/* ---------- shared glass recipes ---------- */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.topbar, .modal, .dialog, .cmdk, .popover, .fpop, .fb-panel)::after { pointer-events: none; }
+
+/* ---------- floating shell: sidebar sheet + topbar glass ---------- */
+@media (min-width: 761px) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .app { padding: var(--lg-gap) 0 var(--lg-gap) var(--lg-gap); gap: var(--lg-gap); }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rail {
+    margin: 0 !important; height: calc(100dvh - 2 * var(--lg-gap)); border: 0 !important;
+    border-radius: var(--lg-radius-lg) !important; overflow: hidden;
+    background: var(--lg-sheen), var(--lg-sheet) !important;
+    box-shadow: var(--lg-rim), var(--lg-lift) !important;
+    -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
+  }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .main { padding: 0 var(--lg-gap) 0 0 !important; gap: var(--lg-gap) !important; }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .topbar {
+    position: relative; border: 0 !important; border-radius: var(--lg-radius-lg) !important;
+    background: var(--lg-glass) !important; box-shadow: var(--lg-lift) !important;
+    -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
+  }
+  /* the admin's gradient rim around the topbar */
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .topbar::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; padding: 1px; pointer-events: none;
+    background: linear-gradient(125deg, var(--lg-rim-strong), var(--lg-rim-faint) 22%, transparent 46%, transparent 62%, var(--lg-rim-faint) 84%, var(--lg-rim-strong));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+  }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .topbar > * { position: relative; z-index: 2; }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .view { border-radius: var(--lg-radius-lg) var(--lg-radius-lg) 0 0; }
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .brand, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rail-foot { border-color: var(--lg-line) !important; background: transparent; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .brand-mark, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .avatar { clip-path: none !important; border-radius: 999px !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-label { color: var(--faint); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rail-collapse {
+  border-radius: 999px !important; margin: 0 4px 2px !important;
+  transition: background-color .2s ease, box-shadow .2s ease, scale .42s var(--lg-spring);
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn:hover, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rail-collapse:hover { background: var(--lg-hover) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn:active { scale: .98; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn.active {
+  background: var(--lg-sheen), var(--lg-hover) !important; color: var(--text) !important;
+  box-shadow: var(--lg-rim), 0 6px 16px -10px rgb(10 40 120 / .5) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn.active::before { display: none; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn.active .ico, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-btn.active .nbadge { color: var(--primary-400) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .search, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .search input { border-radius: 999px !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .search input { background: var(--lg-field) !important; border-color: var(--lg-line) !important; box-shadow: var(--lg-rim); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .icon-btn { border-radius: 999px !important; transition: scale .42s var(--lg-spring), background-color .15s ease; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .icon-btn:hover { background: var(--lg-hover) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .icon-btn:active { scale: .86; transition-duration: .1s; }
+
+/* ---------- sheets: panels, cards, tiles ---------- */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.feed-card, .panel, .card, .sstat, .ki-tile, .act-tile, .u-hero, .qtable, .im-list, .gc-list, .ev-tl, .stat, .fb-item, .note) {
+  border: 0 !important; border-radius: var(--lg-radius-lg) !important;
+  background: var(--lg-sheen), var(--lg-sheet) !important;
+  box-shadow: var(--lg-rim), var(--lg-lift) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.panel, .feed-card, .card) :is(.feed-card, .panel, .card, .note, .qtable) {
+  border-radius: var(--lg-radius-md) !important; background: var(--lg-sheet-inner) !important; box-shadow: var(--lg-rim) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .sstat { transition: transform .45s var(--lg-spring); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .sstat:hover { transform: translateY(-2px); background: var(--lg-sheen), var(--lg-sheet) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .qtable { overflow: hidden; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.qhead, .qrow) { border-color: var(--lg-line) !important; background: transparent !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .qrow:hover { background: var(--lg-hover) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .qhead .qc { font-family: var(--font-ui); font-size: 12px; font-weight: 600; color: var(--faint); }
+
+/* ---------- chats: three floating sheets ---------- */
+@media (min-width: 1001px) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split.three, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split.two { gap: var(--lg-gap); padding-bottom: var(--lg-gap); }
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split > .pane {
+  border: 0 !important; border-radius: var(--lg-radius-lg) !important; overflow: auto;
+  background: var(--lg-sheen), var(--lg-sheet) !important;
+  box-shadow: var(--lg-rim), var(--lg-lift) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split > .pane.detail { display: flex; flex-direction: column; overflow: hidden; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .pane.list .pane-head, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .q-day, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ctx-tabs, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .detail-head {
+  background: var(--lg-sticky) !important; border-color: var(--lg-line) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%);
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .detail-head { background: transparent !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .pane.list .row, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .tg-list .row { border-color: var(--lg-line) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .pane.list .row:hover, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .tg-list .row:hover { background: var(--lg-hover) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .pane.list .row.active, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .tg-list .row.active {
+  background: var(--lg-sheen), color-mix(in oklab, var(--primary-500) 14%, transparent) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .row > .av.unread-av { clip-path: none !important; border-radius: 999px !important; background: var(--primary-600) !important; color: #fff !important; }
+/* log */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .thread .msg .bubble { border-left-color: rgb(255 255 255 / .2) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .thread .msg.out .bubble {
+  clip-path: none !important; border: 0 !important; border-radius: var(--lg-radius-md) var(--lg-radius-md) 4px var(--lg-radius-md) !important;
+  background: var(--lg-sheen), color-mix(in oklab, var(--primary-500) 22%, transparent) !important;
+  box-shadow: var(--lg-rim) !important; padding: 10px 14px !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .thread .msg.internal .bubble { border-radius: 0 var(--lg-radius-md) var(--lg-radius-md) 0 !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .msg-day { border-radius: 999px; background: var(--lg-field); border-color: var(--lg-line); box-shadow: var(--lg-rim); }
+/* composer */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer {
+  border: 0 !important; border-radius: var(--lg-radius-md) !important;
+  background: var(--lg-field) !important; box-shadow: var(--lg-rim) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer:focus-within { box-shadow: var(--lg-rim), 0 0 0 1.5px var(--primary-500) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer > div { border-color: var(--lg-line) !important; }
+/* context */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ctx-tab { clip-path: none !important; border-radius: 999px; background: var(--lg-field); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ctx-tab.on { background: var(--lg-sheen), var(--lg-hover); color: var(--text); box-shadow: var(--lg-rim), 0 4px 12px -6px rgb(10 30 90 / .45); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ctx-sec { border-color: var(--lg-line) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.ctx-item, .pane.context .note) {
+  border: 0 !important; border-radius: var(--lg-radius-md) !important;
+  background: var(--lg-sheet-inner) !important; box-shadow: var(--lg-rim) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ctx-item:hover { background: var(--lg-hover) !important; }
+
+/* ---------- segmented tabs (filters, home tabs, sub tabs) ---------- */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ds-tabbar { border: 0 !important; padding: 0 0 var(--lg-gap) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .filters, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .filters.fscroll, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .home-tabs, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .subtabs {
+  /* 23px, not 999px: every one-row group (40-46px tall) is still a perfect pill, but a group that
+     wraps to 2+ rows (Forum tags in a narrow list) becomes a rounded box instead of a stretched oval. */
+  width: fit-content; max-width: 100%; gap: 2px; padding: 4px !important; border-radius: 23px !important;
+  background: var(--lg-field) !important; box-shadow: var(--lg-rim) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.filter, .home-tab, .subtabs .stab, .ev-tab, .sch-seg-b) {
+  border-radius: 999px !important; height: 32px; box-shadow: none !important; background: transparent !important;
+  transition: background-color .2s ease, box-shadow .2s ease;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.filter, .home-tab, .subtabs .stab):hover { background: var(--lg-hover) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.filter.active, .home-tab.active, .subtabs .stab.active, .ev-tab.on, .sch-seg-b.on) {
+  background: var(--lg-sheen), var(--lg-hover) !important; color: var(--text) !important;
+  box-shadow: var(--lg-rim), 0 4px 12px -6px rgb(10 30 90 / .45) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .filter.active .fcount { color: var(--primary-400) !important; }
+
+/* ---------- liquid buttons ---------- */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn {
+  --lg-btn-tint: rgb(255 255 255 / .1);
+  clip-path: none !important; border: 0 !important; border-radius: 999px !important;
+  padding-inline: 16px; color: #fff; font-weight: 500;
+  background-color: var(--lg-btn-tint) !important;
+  background-image: radial-gradient(85% 70% at 50% 118%, rgb(255 255 255 / .3), transparent 72%), linear-gradient(180deg, rgb(255 255 255 / .2), transparent 46%) !important;
+  box-shadow: inset 0 1px .5px rgb(255 255 255 / .8), inset 0 -1px .5px rgb(255 255 255 / .32), inset 1px 0 .5px rgb(255 255 255 / .28), inset -1px 0 .5px rgb(255 255 255 / .28), inset 0 0 8px 1px rgb(255 255 255 / .14), 0 0 0 .5px rgb(20 30 70 / .1), 0 6px 14px -8px rgb(20 30 70 / .35) !important;
+  transition: scale .46s var(--lg-spring), box-shadow .25s ease, background-color .2s ease, filter .2s ease !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn.sm { padding-inline: 12px; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn:not([disabled]):hover { scale: 1.035; filter: brightness(1.1) saturate(1.12); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn:not([disabled]):active { scale: 1.06; transition-duration: .14s !important; transform: none; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn.primary { --lg-btn-tint: color-mix(in oklab, var(--primary-600) 88%, transparent); text-shadow: 0 .5px 1px rgb(0 0 0 / .18); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn.mods { --lg-btn-tint: color-mix(in oklab, var(--primary-500) 20%, transparent); color: var(--primary-400); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn.danger { --lg-btn-tint: color-mix(in oklab, #e5484d 70%, transparent); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn.ghost {
+  background: transparent !important; background-image: none !important;
+  box-shadow: inset 0 0 0 1px var(--lg-line), inset 0 1px 0 var(--lg-rim-faint) !important; color: var(--text);
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .detail-head .detail-actions .btn.ghost, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer .btn.ghost { box-shadow: none !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn.ghost:hover { background: var(--lg-hover) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .btn:focus-visible { outline: 2px solid var(--primary-500) !important; outline-offset: 2px; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .chip { clip-path: none !important; border-radius: 999px !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .count-pill { border-radius: 999px !important; background: var(--lg-field) !important; border: 0 !important; box-shadow: var(--lg-rim); }
+
+/* ---------- fields ---------- */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea, .mini-select, .status-select) {
+  border-radius: var(--lg-radius-md) !important; background-color: var(--lg-field) !important; border-color: var(--lg-line) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer textarea, :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .search input { background-color: transparent !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .search input { background-color: var(--lg-field) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .status-select.st { border-radius: 999px !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(input, select, textarea):focus { border-color: var(--primary-500) !important; outline: none; }
+[data-theme="glassy"] select option { background: #181d30; }
+
+/* ---------- floating layers: dropdowns, popovers, modals ---------- */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.popover, .fpop, .cmdk, .ctx-menu, .dropdown, .menu-pop, .fb-panel, .toast) {
+  border: 0 !important; border-radius: var(--lg-radius-md) !important;
+  background: var(--lg-sheen), var(--lg-glass-solid) !important;
+  box-shadow: var(--lg-rim), var(--lg-lift-high) !important;
+  -webkit-backdrop-filter: var(--lg-blur-strong); backdrop-filter: var(--lg-blur-strong);
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.modal, .dialog, .sheet) {
+  border: 0 !important; border-radius: var(--lg-radius-xl) !important;
+  background: var(--lg-sheen), var(--lg-glass-solid) !important;
+  box-shadow: var(--lg-lift-high) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.overlay, .modal-bg, .backdrop) { background: rgb(2 4 14 / .5) !important; }
+
+/* the admin's floating support button: violet circle */
+[data-theme="glassy"] .fb-fab {
+  clip-path: none !important; border-radius: 999px !important;
+  background: #6D4AE8 !important; color: #fff !important;
+  box-shadow: inset 0 1px .5px rgb(255 255 255 / .6), 0 10px 24px -8px rgb(60 30 160 / .7) !important;
+  transition: scale .42s var(--lg-spring);
+}
+[data-theme="glassy"] .fb-fab:hover { scale: 1.06; }
+
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) * { scrollbar-width: thin; scrollbar-color: rgb(150 160 190 / .45) transparent; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) ::selection { background-color: color-mix(in oklab, var(--primary-500) 32%, transparent); }
+
+/* ---------- phone: full-bleed, solid glass sidebar drawer ---------- */
+@media (max-width: 760px) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .rail {
+    border-radius: 0 var(--lg-radius-xl) var(--lg-radius-xl) 0 !important;
+    background: var(--lg-glass-solid) !important; box-shadow: var(--lg-rim), var(--lg-lift-high) !important;
+    -webkit-backdrop-filter: var(--lg-blur-strong); backdrop-filter: var(--lg-blur-strong);
+  }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .topbar { background: var(--lg-sticky) !important; border-radius: 0 !important; }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split > .pane { border-radius: 0 !important; box-shadow: none !important; background: transparent !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="glassy"]::before, html[data-theme="glassy"]::after { animation: none; }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.btn, .icon-btn, .nav-btn, .sstat, .fb-fab) { scale: none !important; transition: none !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  [data-theme="glassy"] { --lg-glass: #161b30; --lg-glass-solid: #161b30; --lg-sheet: #161b30; }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  html[data-theme="glassy"]::before, html[data-theme="glassy"]::after { display: none; }
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer > div { flex-wrap: wrap; row-gap: 6px; justify-content: flex-end; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer .btn { padding-inline: 12px; white-space: nowrap; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .composer .btn.ghost { padding-inline: 8px; }
+
+/* calmer wallpaper: the admin's colours, dimmed for full pages without sheets */
+html[data-theme="glassy"]::before, html[data-theme="glassy"]::after { filter: blur(36px) brightness(.62) saturate(.9); }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) { --rail-w: 244px; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .ds-tabbar.gc-bar { padding: 8px 24px 12px !important; flex-wrap: wrap; }
+
+/* one sidebar for all three themes = the Glassy panel: plain groups,
+   small mono group labels, 34px rows. Only the boxes/lines around groups are removed here; labels and rows
+   come from desk.css + the shared glassy rules above. */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-group { border: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .nav-group + .nav-group { border-top: 0 !important; }
+
+/* collapsed rail: only the collapse chevron flips, the Customize wrench stays upright */
+.app.rail-collapsed .rail-collapse[data-act="customize-nav"] .ico { transform: none !important; }
+
+/* scrollbars: thin rounded thumb, no arrows, track invisible; shows clearly on hover */
+@supports selector(::-webkit-scrollbar) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) * { scrollbar-width: auto !important; scrollbar-color: auto !important; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; background: transparent; }
+  ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgb(140 145 165 / .28); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+  :hover::-webkit-scrollbar-thumb { background-color: rgb(140 145 165 / .45); }
+  ::-webkit-scrollbar-thumb:hover { background-color: rgb(140 145 165 / .65); }
+  .nav-scroll::-webkit-scrollbar { width: 8px; }
+  .nav-scroll::-webkit-scrollbar-thumb { background-color: transparent; }
+  .nav-scroll:hover::-webkit-scrollbar-thumb { background-color: rgb(140 145 165 / .4); }
+  [data-theme="light"] ::-webkit-scrollbar-thumb { background-color: rgb(60 64 80 / .22); }
+}
+
+/* tables inside a scrolling feed keep their full height (the feed scrolls, the table never gets squeezed and clipped) */
+.feed > .qtable, .feed > .gc-list, .feed > .im-list { flex: none !important; }
+
+/* ---------- Admin: sections (tabs) with tidy grids ---------- */
+.admin-page .admin-tabs { margin: 0 var(--gutter, 28px) 16px; width: fit-content; max-width: calc(100% - 2 * var(--gutter, 28px)); overflow-x: auto; flex-wrap: nowrap; }
+.admin-page .admin-tabs .stab { white-space: nowrap; flex: none; }
+.admin-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; align-items: start; }
+.admin-grid > .panel { min-width: 0; }
+.admin-sec-team > .panel:first-child, .admin-sec-reports > .panel, .admin-sec-data > .panel, .admin-sec-known > .panel:first-child { grid-column: 1 / -1; }
+.admin-sec-team > .panel:first-child .act-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.admin-grid .act-row .ar-sub > .ico-sm, .admin-grid .act-row .ar-sub > svg { display: inline-block !important; width: 14px; height: 14px; vertical-align: -2px; margin-right: 6px; flex: none; }
+.admin-grid .act-row .ar-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-grid .act-list.act-scroll { max-height: 520px; }
+@media (max-width: 1000px) {
+  .admin-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .admin-page .admin-tabs { margin: 0 12px 12px; max-width: calc(100% - 24px); }
+}
+/* Admin reports: names never break onto two lines */
+.admin-grid .act-row b, .admin-grid .act-row .ar-main > b { white-space: nowrap; }
+.fb-edit-btn { margin-left: 6px; vertical-align: middle; } .fb-edit textarea { width: 100%; min-height: 72px; resize: vertical; }
+/* session pickers: launcher tag next to the game title */
+.ts-main .ts-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ts-main .ts-title > b { min-width: 0; }
+.ts-launcher {
+  flex: none; font-size: 11px; font-weight: 600; line-height: 18px; padding: 0 7px; border-radius: 6px;
+  color: var(--muted); background: var(--card-2); box-shadow: inset 0 0 0 1px var(--border);
+}
+
+/* Events log: Time is the first column on desktop (markup order unchanged, so the phone layout stays) */
+@media (min-width: 901px) {
+  .ev-log .ev-tr { grid-template-columns: 150px 130px minmax(160px, 2fr) minmax(140px, 1.6fr) 110px; }
+  .ev-log .ev-tr > .ev-td:last-child { order: -1; }
+}
+
+/* ---------- feedback panel, admin format ---------- */
+.fb-panel { width: min(360px, calc(100vw - 20px)) !important; border: 0 !important; border-radius: 16px !important; overflow: hidden;
+  background: var(--lg-glass-solid, var(--card)) !important; box-shadow: 0 0 0 1px var(--border), 0 25px 50px -12px rgb(0 0 0 / .5) !important; }
+[data-theme="glassy"] .fb-panel { -webkit-backdrop-filter: blur(24px) saturate(170%); backdrop-filter: blur(24px) saturate(170%); }
+.fb-head { background: var(--btn-fill) !important; color: var(--on-btn-fill) !important; border: 0 !important; padding: 14px 16px !important; align-items: center; gap: 10px; }
+.fb-head-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fb-head-t span { font-size: 16px; font-weight: 600; }
+.fb-head-t small { font-size: 12.5px; font-weight: 400; opacity: .85; }
+.fb-x { width: 28px; height: 28px; flex: none; border-radius: 999px !important; display: grid; place-items: center; padding: 0 !important;
+  background: rgb(255 255 255 / .18) !important; color: inherit !important; font-size: 18px !important; }
+.fb-x:hover { background: rgb(255 255 255 / .28) !important; }
+.fb-body { padding: 14px 16px 12px !important; gap: 8px !important; }
+.fb-lbl { font-size: 13px; font-weight: 600; color: var(--text); }
+.fb-cats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 4px; }
+.fb-cat { appearance: none; border: 0; cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 500; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px; border-radius: 12px;
+  background: var(--card-2); box-shadow: inset 0 0 0 1px var(--border); transition: background-color .15s ease, box-shadow .15s ease, color .15s ease; }
+.fb-cat .ico { width: 20px; height: 20px; }
+.fb-cat:hover { color: var(--text); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.fb-cat.on { color: var(--text); background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.fb-cat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fb-body textarea { min-height: 96px !important; border-radius: 10px !important; }
+.fb-count { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 12px; color: var(--faint); }
+.fb-bar { flex: 1; height: 3px; border-radius: 3px; background: var(--border); overflow: hidden; }
+.fb-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .15s ease; }
+.fb-send { width: 100%; justify-content: center; gap: 8px; margin-top: 6px; }
+.fb-all { display: block; text-align: center; padding: 10px 16px 12px; font-size: 12.5px; font-weight: 500; color: var(--muted);
+  text-decoration: none; border-top: 1px solid var(--border); }
+.fb-all:hover { color: var(--text); }
+.fb-send > .ico-sm { display: inline-flex !important; width: 16px; height: 16px; }
+/* Inbox home tabs never break a label onto two lines (phone) */
+.home-tab { white-space: nowrap; }
+@media (max-width: 760px) {
+  .hero-top .home-tabs, .home-tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .home-tabs::-webkit-scrollbar { display: none; }
+  .home-tab { flex: 1 0 auto; padding-inline: 10px; }
+}
+
+/* Link Jira Ticket: tickets found in the Jira title index */
+.jsug-h { font-size: 12px; font-weight: 600; color: var(--faint); padding: 8px 4px 4px; }
+.jsug-row .ar-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.jsug-title { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.35; overflow-wrap: anywhere; }
+
+/* Search boxes where the WRAPPER is the field (modal search, Known Issues, command palette): one frame,
+   the input inside is transparent - no grey box inside the border. */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.modal-search, .ki-search, .cmdk-input) {
+  display: flex; align-items: center; gap: 8px; padding: 0 12px; min-height: 42px;
+  background: var(--lg-field) !important; border: 0 !important; border-radius: var(--lg-radius-md) !important;
+  box-shadow: inset 0 0 0 1px var(--field-edge) !important;
+  transition: box-shadow .15s ease;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.modal-search, .ki-search, .cmdk-input):focus-within {
+  box-shadow: inset 0 0 0 2px var(--accent) !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.modal-search, .ki-search, .cmdk-input) input {
+  flex: 1; min-width: 0; height: 40px; padding: 0 !important; margin: 0;
+  background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; outline: none !important;
+}
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.modal-search, .ki-search, .cmdk-input) > svg { flex: none; color: var(--faint); }
+/* (higher specificity than the theme-wide field rule, which also styles inputs) */
+html[data-theme] body :is(.modal-search, .ki-search, .cmdk-input) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+  background: transparent !important; background-color: transparent !important; border: 0 !important;
+  box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; outline: none !important;
+}
+/* phone: every filter strip is one row that scrolls sideways (never a two-row capsule) */
+@media (max-width: 760px) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .filters {
+    flex-wrap: nowrap !important; overflow-x: auto; max-width: 100%; scrollbar-width: none;
+  }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .filters::-webkit-scrollbar { display: none; }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .filters > .filter { flex: none; white-space: nowrap; }
+}
+
+/* Inbox tables: no line between the block title and the table (it would stick out past the rounded
+   corners); a gap separates them instead. */
+.inbox-col .pane-title:has(+ .qtable), .inbox-col .pane-title:has(+ .feed), .pane-title:has(+ .qtable) {
+  border-bottom: 0 !important; padding-bottom: 12px !important;
+}
+/* "When" fits a full date + age ("18 Nov 05:43 - 1d ago") */
+.q-todo .qrow { grid-template-columns: minmax(160px, 1.1fr) minmax(0, 2fr) minmax(0, 1fr) 192px; }
+.q-mon .qrow { grid-template-columns: minmax(0, 2.4fr) minmax(140px, 1fr) minmax(0, 1fr) 192px; }
+.q-todo .qc-when, .q-mon .qc-when { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 900px) {
+  .q-todo .qrow, .q-mon .qrow { grid-template-columns: minmax(0, 1fr) auto; }
+}
+/* two-line When: column stays compact */
+.q-todo .qrow { grid-template-columns: minmax(160px, 1.1fr) minmax(0, 2fr) minmax(0, 1fr) 112px; }
+.q-mon .qrow { grid-template-columns: minmax(0, 2.4fr) minmax(140px, 1fr) minmax(0, 1fr) 112px; }
+.q-todo .qc-when, .q-mon .qc-when { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; overflow: visible; }
+.qc-when .qw-ago { font-size: 12px; color: var(--faint); }
+@media (max-width: 900px) {
+  .q-todo .qrow, .q-mon .qrow { grid-template-columns: minmax(0, 1fr) auto; }
+}
+/* ticket keys never break ("SO-" / "16408" on two lines); the title next to them takes the ellipsis */
+.jkey { white-space: nowrap; flex: none; }
+.act-row .row-gap > .truncate { min-width: 0; flex: 1 1 auto; }
+
+/* ---- speed (phones first) ----
+   Long lists: rows off screen skip layout and paint (1280 ModMail rows: ~390ms -> ~110ms on a desktop CPU,
+   a phone is several times slower). "auto" remembers each row's real height once it has been shown. */
+.pane.list .row { content-visibility: auto; contain-intrinsic-size: auto 64px; }
+.qtable .qrow { content-visibility: auto; contain-intrinsic-size: auto 48px; }
+/* the loading bar is invisible most of the time: do not keep animating it */
+.busy-bar:not(.on)::before { animation: none; }
+/* sticky list headers and day separators are near-opaque already: their blur was pure cost while scrolling */
+:is([data-theme="dark"], [data-theme="light"]) :is(.pane.list .pane-head, .q-day, .ctx-tabs) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+@media (max-width: 760px) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) :is(.pane.list .pane-head, .q-day, .ctx-tabs, .pane, .filters, .ds-tabbar, .fscroll) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  /* Dark / Light are opaque themes: no blur at all on a phone */
+  :is([data-theme="dark"], [data-theme="light"]) * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  /* Glassy keeps its glass, but the wallpaper stands still on a phone (its drift re-blurred every glass layer) */
+  html[data-theme="glassy"]::before, html[data-theme="glassy"]::after { animation: none; will-change: auto; }
+}
+/* phone: the Reddit "Test mode" banner took a third of the screen on every Reddit page; 2 lines, tap for all */
+@media (max-width: 760px) {
+  .rss-banner { cursor: pointer; }
+  .rss-banner > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rss-banner.open > span { -webkit-line-clamp: unset; display: block; }
+}
+/* toasts: the glass background above kept the old inverted text colour (dark on dark / light on light), so
+   the text was invisible; errors lost their red. Readable text, red errors, green important successes. */
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .toast { color: var(--text) !important; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .toast.error { background: var(--danger) !important; color: #fff !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .toast.error.sticky { background: var(--success) !important; }
+/* phone: the floating form window (Create Ticket, Urgent, Link Ticket...) is a full-height sheet; the
+   desktop drag position (inline right/top) pushed it off centre and squeezed it */
+@media (max-width: 760px) {
+  #popover.popover { left: 8px !important; right: 8px !important; top: max(8px, env(safe-area-inset-top)) !important; bottom: 8px !important; width: auto !important; max-height: none !important; }
+  #popover.popover .modal-head { cursor: default; }
+  #popover.popover .modal-body { max-height: none; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+}
+.us-get { flex-direction: row !important; align-items: center; gap: 10px; flex-wrap: wrap; }
+.us-get .btn { align-self: flex-start; }
+@media (max-width: 760px) { body:has(#popover.open) .fb-fab { display: none !important; } }
+
+/* Game Cards: Game-List IDs under Related Apps */
+.gc-ids { margin-top: 4px; font-size: 11.5px; color: var(--faint); font-variant-numeric: tabular-nums; user-select: text; }
+.gc-ids .gc-id-miss { color: #e0a53a; cursor: help; }
+.gc-ids .gc-id-wait { opacity: .6; }
+
+/* Sub-tabs (Maintenance Games / Playgrounds...): label + count stay on one line */
+.subtabs .stab { white-space: nowrap; }
+/* Quick Actions: icon and text centred vertically in every tile, whatever the description length */
+.act-tile { align-items: center; }
+/* Game Cards: "Add game" sits flush under the last card (no extra gap above it) */
+.gc-list > .gc-add { margin-top: 0; }
+/* Phone: the whole screen scrolls under the sticky chat header, so it needs a solid backdrop
+   (on desktop the thread scrolls in its own box and the header can stay transparent). */
+@media (max-width: 760px) {
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split > .pane.detail .detail-head {
+    background: var(--lg-glass-solid, var(--card)) !important; border-bottom: 1px solid var(--border);
+    /* Android Chrome painted the scrolling messages OVER this header (text showed through it). Its own
+       composited layer + a higher stacking level, and the thread as a lower stacking context, fix the order. */
+    z-index: 6 !important; isolation: isolate; transform: translateZ(0); will-change: transform;
+  }
+  :is([data-theme="glassy"], [data-theme="dark"], [data-theme="light"]) .split > .pane.detail > .thread {
+    position: relative; z-index: 0;
+  }
+}
+
+/* Switching themes must not move things: Glassy used its own topbar right padding (16 vs 28px) and drops
+   the heading accent bar, which shifted the buttons and the page titles. Same geometry in every theme;
+   Glassy keeps its look (no visible bar), only the spacing is shared. */
+[data-theme="glassy"] .topbar { padding-right: var(--gutter) !important; }
+[data-theme="glassy"] :is(.page-head h1, .hero-top .greeting) { border-left: 3px solid transparent !important; padding-left: 12px !important; }
+
+/* Discord Forum post header: title on top (full width, not squeezed by the chips), status / forum / tags
+   under it, Open in Discord vertically centred on the right. */
+.detail-head.fh { flex-wrap: nowrap !important; align-items: center !important; }
+.detail-head.fh .dh-main { flex: 1 1 auto; min-width: 0; flex-direction: column !important; align-items: flex-start !important; gap: 6px; }
+.detail-head.fh .dh-main h2 { max-width: 100%; }
+.detail-head.fh .dh-status { flex-wrap: wrap; gap: 6px; justify-content: flex-start !important; align-self: flex-start !important; margin: 0 !important; width: auto !important; }
+.detail-head.fh .detail-actions { flex: none; align-self: center; margin: 0 !important; }
+
+/* Reddit Post header: the Ignore button keeps its label (an icon-only "x" read like a close button) and
+   stays on the title row on a phone; the "Ignored by" caption sits under the title instead. */
+.detail-head.ph .dh-main { gap: 3px; }
+.detail-head.ph .ignored-by { text-align: left; max-width: 100%; }
+.detail-head.ph .detail-actions .btn.ph-ignore { font-size: 12px !important; gap: 5px !important; width: auto; min-width: 0; padding: 0 10px !important; }

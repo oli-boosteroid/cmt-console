@@ -1,0 +1,9 @@
+# Dependencies for the standalone CMT Console service (console_app.py).
+# Intentionally minimal: no discord.py / slack_sdk / weasyprint / motor.
+Flask
+waitress
+pymongo[srv]
+python-dotenv
+requests
+rjsmin
+rcssmin

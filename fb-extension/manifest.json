@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "CMT Facebook",
+  "version": "1.8.2",
+  "description": "Sends new Facebook group posts and new chat messages to the CMT console every 5 minutes.",
+  "permissions": [
+    "alarms",
+    "tabs",
+    "downloads",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.facebook.com/*",
+    "https://web.facebook.com/*",
+    "__CONSOLE_ORIGIN__"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.facebook.com/*",
+        "https://web.facebook.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "CMT Facebook"
+  }
+}

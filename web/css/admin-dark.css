@@ -1,0 +1,110 @@
+/* ============================================================
+   CMT Console · Dark theme = the admin panel's default dark
+   (html.fi.dark, data-admin-theme="default", palette "chromatic").
+   Layout and shapes are shared with Glassy (glassy.css applies its
+   structure to both themes); this file only swaps the glass for the
+   admin's solid dark surfaces: zinc greys, amber primary, gray-900
+   sheets with a white/10 ring, boxed sidebar groups, flat buttons.
+   Loaded after glassy.css. Fonts stay IBM Plex (owner rule).
+   ============================================================ */
+
+[data-theme="dark"] {
+  --gray-400: oklch(.705 .015 286.067);
+  --gray-500: oklch(.552 .016 285.938);
+  --gray-800: oklch(.274 .006 286.033);
+  --gray-900: oklch(.21 .006 285.885);
+  --gray-950: oklch(.141 .005 285.823);
+  --primary-400: oklch(.828 .189 84.429);
+  --primary-500: oklch(.769 .188 70.08);
+  --primary-600: oklch(.666 .179 58.318);
+  --ring: rgb(255 255 255 / .1);
+  --ring-field: rgb(255 255 255 / .2);
+
+  /* the shared "glass" recipe, made solid */
+  --lg-gap: 12px;
+  --lg-radius-xl: 28px;
+  --lg-radius-lg: 22px;
+  --lg-radius-md: 14px;
+  --lg-spring: cubic-bezier(.22, 1, .36, 1);
+  --lg-settle: cubic-bezier(.22, 1, .36, 1);
+  --lg-glass: var(--gray-900);
+  --lg-glass-solid: var(--gray-900);
+  --lg-sticky: var(--gray-900);
+  --lg-sheet: var(--gray-900);
+  --lg-sheet-inner: rgb(255 255 255 / .03);
+  --lg-field: rgb(255 255 255 / .05);
+  --lg-hover: rgb(255 255 255 / .06);
+  --lg-line: var(--ring);
+  --lg-sheen: linear-gradient(transparent, transparent);
+  --lg-rim-strong: rgb(255 255 255 / .1);
+  --lg-rim-faint: rgb(255 255 255 / .06);
+  --lg-rim: inset 0 0 0 1px var(--ring);
+  --lg-lift: 0 1px 3px 0 rgb(0 0 0 / .25), 0 1px 2px -1px rgb(0 0 0 / .25);
+  --lg-lift-high: 0 0 0 1px var(--ring), 0 25px 50px -12px rgb(0 0 0 / .5);
+  --lg-blur: none;
+  --lg-blur-strong: none;
+
+  --bg: var(--gray-950);
+  --surface: var(--gray-900);
+  --card: var(--gray-900);
+  --card-2: rgb(255 255 255 / .05);
+  --border: var(--ring);
+  --border-strong: rgb(255 255 255 / .15);
+  --field-edge: var(--ring-field);
+  --text: #fff;
+  --muted: var(--gray-400);
+  --faint: var(--gray-500);
+  --accent: var(--primary-400);
+  --accent-strong: var(--primary-400);
+  --accent-soft: color-mix(in oklab, var(--primary-500) 12%, transparent);
+  --on-accent: #fff;
+  --btn-fill: var(--primary-600);
+  --btn-fill-hover: var(--primary-500);
+  --btn-fill-active: var(--primary-600);
+  --on-btn-fill: #fff;
+  --head-bar: var(--primary-500);
+  --desk-deep: transparent;
+  --desk-raise: var(--lg-field);
+  --desk-hover: var(--lg-hover);
+  --desk-line: var(--ring);
+  --desk-sticky: var(--gray-900);
+  --sticky-bg: var(--gray-900);
+}
+
+[data-theme="dark"] body { background: var(--gray-950) !important; -webkit-font-smoothing: antialiased; }
+[data-theme="dark"] .topbar::after { display: none; }
+
+[data-theme="dark"] .nav-btn { color: var(--gray-400); }
+[data-theme="dark"] .nav-btn:hover { color: #fff; }
+[data-theme="dark"] .nav-btn.active { background: rgb(255 255 255 / .05) !important; color: var(--primary-400) !important; box-shadow: none !important; }
+[data-theme="dark"] .nav-btn.active .ico, [data-theme="dark"] .nav-btn.active .nbadge { color: var(--primary-400) !important; }
+
+/* flat Filament buttons in the shared pill shape */
+[data-theme="dark"] .btn {
+  background-image: none !important; background-color: rgb(255 255 255 / .05) !important; color: #fff;
+  box-shadow: inset 0 0 0 1px var(--ring-field) !important; filter: none !important;
+}
+[data-theme="dark"] .btn:not([disabled]):hover { background-color: rgb(255 255 255 / .1) !important; scale: 1; filter: none; }
+[data-theme="dark"] .btn:not([disabled]):active { scale: .98; }
+[data-theme="dark"] .btn.primary { background-color: var(--primary-600) !important; color: #fff !important; box-shadow: none !important; text-shadow: none; }
+[data-theme="dark"] .btn.primary:hover { background-color: var(--primary-500) !important; }
+[data-theme="dark"] .btn.mods { background-color: color-mix(in oklab, var(--primary-500) 10%, transparent) !important; color: var(--primary-400) !important; box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-400) 35%, transparent) !important; }
+[data-theme="dark"] .btn.danger { background-color: oklch(.577 .245 27.325) !important; color: #fff !important; box-shadow: none !important; }
+[data-theme="dark"] .btn.ghost { background-color: transparent !important; color: var(--gray-400); }
+[data-theme="dark"] .btn.ghost:hover { background-color: rgb(255 255 255 / .05) !important; color: #fff; }
+
+/* accents in the admin's amber */
+[data-theme="dark"] .pane.list .row.active, [data-theme="dark"] .tg-list .row.active { background: rgb(255 255 255 / .05) !important; }
+[data-theme="dark"] .row > .av.unread-av { background: var(--primary-600) !important; }
+[data-theme="dark"] .thread .msg.out .bubble {
+  background: color-mix(in oklab, var(--primary-500) 14%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-500) 30%, transparent) !important;
+}
+[data-theme="dark"] .composer:focus-within { box-shadow: inset 0 0 0 2px var(--primary-500) !important; }
+[data-theme="dark"] .filter.active .fcount, [data-theme="dark"] .ctx-tab.on { color: var(--primary-400) !important; }
+[data-theme="dark"] :is(input, select, textarea):focus { border-color: var(--primary-500) !important; }
+[data-theme="dark"] .qrow:nth-child(2n) { background: rgb(255 255 255 / .03) !important; }
+[data-theme="dark"] .qrow:hover { background: rgb(255 255 255 / .06) !important; }
+[data-theme="dark"] select option { background: var(--gray-900); }
+[data-theme="dark"] .fb-fab { clip-path: none !important; border-radius: 999px !important; background: var(--primary-600) !important; color: #fff !important; box-shadow: 0 10px 24px -8px rgb(0 0 0 / .6) !important; }
+[data-theme="dark"] .page-head h1, [data-theme="dark"] .greeting { text-shadow: 0 1px 3px rgb(0 0 0 / .3); }

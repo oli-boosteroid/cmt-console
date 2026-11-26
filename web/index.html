@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMT Console</title>
+  <!-- PWA: installable + Web Push (desktop browsers and phone home-screen app) -->
+  <meta name="theme-color" content="#D97706">
+  <link rel="stylesheet" href="css/fonts.css?v=1">
+  <link rel="manifest" href="manifest.webmanifest?v=3.0">
+  <link rel="icon" type="image/png" href="icon-192.png?v=3.0">
+  <link rel="apple-touch-icon" href="icon-192.png?v=3.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CMT Console">
+  <link rel="stylesheet" href="css/tokens.css?v=3.0">
+  <link rel="stylesheet" href="css/base.css?v=3.0">
+  <link rel="stylesheet" href="css/app.css?v=3.1&amp;b=2">
+  <link rel="stylesheet" href="css/theme-v3.css?v=3.8">
+  <link rel="stylesheet" href="css/desk.css?v=4.14">
+  <link rel="stylesheet" href="css/glassy.css?v=1.37">
+  <link rel="stylesheet" href="css/admin-dark.css?v=1.04">
+  <link rel="stylesheet" href="css/admin-light.css?v=1.03">
+  <link rel="stylesheet" href="css/black.css?v=1.01">
+</head>
+<body>
+  <!-- global busy bar: shows while any server action is in flight -->
+  <div id="busy-bar" class="busy-bar" aria-hidden="true"></div>
+
+  <!-- mobile drawer backdrop (tap to close the slide-in rail) -->
+  <div id="rail-backdrop" data-act="rail-close" aria-hidden="true"></div>
+
+  <div class="app">
+    <nav class="rail" id="rail" aria-label="Sections"></nav>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn" id="nav-toggle" data-act="rail-toggle" title="Menu" aria-label="Menu">
+          <svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        </button>
+        <h2 id="view-title" class="serif truncate">Inbox</h2>
+        <div class="spacer"></div>
+
+        <label class="search" title="Search in this section">
+          <svg aria-hidden="true" class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M8.5 4h5L17 7.5v5L13.5 16h-5L5 12.5v-5z"/><path d="M16 15l4.5 4.5"/></svg>
+          <input id="search-input" type="text" placeholder="Search..." autocomplete="off">
+        </label>
+
+        <button class="icon-btn" id="refresh-btn" data-act="refresh" title="Refresh data now" aria-label="Refresh">
+          <svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M19 9l-3-4H8L5 9v1"/><path d="M5 15l3 4h8l3-4v-1"/><path d="M16 9h3V6M8 15H5v3"/></svg>
+        </button>
+
+        <button class="icon-btn" id="m-info-btn" data-act="m-info" title="Details" aria-label="Details">
+          <svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M10 4h4l2 2v4l-2 2h-4l-2-2V6z"/><path d="M4 21v-3l3-3h10l3 3v3"/></svg>
+        </button>
+
+        <button class="icon-btn" id="bell-btn" data-act="notifications" title="Notifications" aria-label="Notifications">
+          <svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M6 16v-6l2-4 2-2h4l2 2 2 4v6l2 2H4z"/><path d="M10 21h4"/></svg>
+          <span class="pip" style="display:none"></span>
+        </button>
+
+        <button class="icon-btn" id="theme-btn" data-act="theme" title="Change design" aria-label="Change design"></button>
+
+        <button class="avatar" id="avatar-btn" data-act="account" title="Account">OI</button>
+      </header>
+
+      <main class="view" id="view-root"></main>
+    </div>
+  </div>
+
+  <!-- command palette -->
+  <div class="overlay" id="cmdk-overlay">
+    <div class="cmdk" role="dialog" aria-label="Command palette">
+      <div class="cmdk-input">
+        <svg aria-hidden="true" class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M8.5 4h5L17 7.5v5L13.5 16h-5L5 12.5v-5z"/><path d="M16 15l4.5 4.5"/></svg>
+        <input id="cmdk-input" type="text" placeholder="Jump to a conversation, ticket, user... or run a command" autocomplete="off">
+        <kbd style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">esc</kbd>
+      </div>
+      <div class="cmdk-list" id="cmdk-list"></div>
+    </div>
+  </div>
+
+  <!-- modal (Actions hub / Admin forms) -->
+  <div class="overlay" id="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Dialog" id="modal-box"></div>
+  </div>
+
+  <!-- modeless popover (in-chat Add Jira / Maintenance / Email ... - no backdrop, W5) -->
+  <div class="popover" id="popover" role="dialog" aria-label="Panel"></div>
+
+  <!-- floating feedback widget (Suggestion / Bug), bottom-right (item Y) -->
+  <button class="fb-fab" id="feedback-fab" data-act="feedback-open" title="Send feedback" aria-label="Send feedback">
+    <svg aria-hidden="true" class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter"><path d="M6 4h12l3 3v7l-3 3h-8l-5 4v-4l-2-2V7z"/><path d="M8 9h8M8 12.5h5"/></svg>
+  </button>
+  <div class="fb-panel" id="feedback-panel" role="dialog" aria-label="Send feedback">
+    <div class="fb-head"><div class="fb-head-t"><span>Send Feedback</span></div><button class="fb-x" data-act="feedback-close" aria-label="Close">&times;</button></div>
+    <div class="fb-body">
+      <span class="fb-lbl" id="fb-cat-lbl">Category</span>
+      <input type="hidden" id="fb-category" value="">
+      <div class="fb-cats" role="radiogroup" aria-labelledby="fb-cat-lbl">
+        <button type="button" class="fb-cat" data-act="feedback-cat" data-val="Bug" role="radio" aria-checked="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 7h6l3 3v6l-3 3H9l-3-3v-6z"/><path d="M12 9v10M6 13H3M21 13h-3M7 8L5 6M17 8l2-2M7 18l-2 2M17 18l2 2"/></svg><span>Bug</span></button>
+        <button type="button" class="fb-cat" data-act="feedback-cat" data-val="Suggestion" role="radio" aria-checked="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 3h6l3 3v5l-3 4H9l-3-4V6z"/><path d="M9 18h6M10 21h4"/></svg><span>Suggestion</span></button>
+        <button type="button" class="fb-cat" data-act="feedback-cat" data-val="Question" role="radio" aria-checked="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 3h6l6 6v6l-6 6H9l-6-6V9z"/><path d="M10 9.5l1-1.5h2l1.5 1.5v1.5l-2.5 2v1.5"/><rect x="11" y="16.4" width="2" height="2" fill="currentColor" stroke="none"/></svg><span>Question</span></button>
+      </div>
+      <label class="fb-lbl" for="fb-message">Message</label>
+      <textarea id="fb-message" maxlength="2000" placeholder="Describe your feedback..."></textarea>
+      <div class="fb-count"><span class="fb-bar"><i id="fb-bar"></i></span><span id="fb-count">0 / 2000</span></div>
+      <div id="fb-shots"></div>
+      <button class="btn primary fb-send" data-act="feedback-submit"><svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M21 3L10 14M21 3l-6 18-5-7-7-5z"/></svg>Submit Feedback</button>
+    </div>
+    <a class="fb-all" href="#/feedback" data-act="feedback-all">All my feedback &rarr;</a>
+  </div>
+
+  <!-- auth gate (login) -->
+  <div class="auth-gate" id="auth-gate"></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/config.js?v=1"></script>
+  <script src="js/icons.js?v=3.1"></script>
+  <script src="js/api.js?v=3.0&amp;b=35"></script>
+  <script src="js/app.js?v=3.1&amp;b=47"></script>
+</body>
+</html>

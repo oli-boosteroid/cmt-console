@@ -1,0 +1,62 @@
+# CMT Console on the corporate VM (next to the CMT bot). See docs/vm-deploy.md.
+#
+#   docker compose -f docker-compose.vm.yml up -d --build                      # console + public Known Issues
+#   docker compose -f docker-compose.vm.yml --profile tunnel up -d --build     # + Cloudflare Tunnel (option A)
+#
+# No port is opened to the outside: the two apps listen on 127.0.0.1 only (for a DevOps reverse proxy, option B),
+# and with the tunnel profile cloudflared reaches them over the Docker network. Secrets live in deploy/*.env on
+# the VM (never in git, never in the image).
+
+x-hardening: &hardening
+  read_only: true
+  tmpfs: ["/tmp"]
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  user: "10001:10001"
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "5" }
+
+services:
+  cmt-console:
+    <<: *hardening
+    build: .
+    image: cmt-console:latest
+    container_name: cmt-console
+    command: ["python", "console_app.py"]
+    env_file: ./deploy/console.env
+    environment: { PORT: "8080" }
+    ports: ["127.0.0.1:8080:8080"]
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [cmt]
+
+  cmt-knownissues:
+    <<: *hardening
+    image: cmt-console:latest          # same image, public-only entrypoint
+    container_name: cmt-knownissues
+    depends_on: [cmt-console]
+    command: ["python", "public_app.py"]
+    env_file: ./deploy/knownissues.env
+    environment: { PORT: "8081" }
+    ports: ["127.0.0.1:8081:8081"]
+    mem_limit: 256m
+    cpus: 0.5
+    networks: [cmt]
+
+  cloudflared:
+    <<: *hardening
+    profiles: ["tunnel"]
+    image: cloudflare/cloudflared:2024.12.2
+    container_name: cmt-cloudflared
+    command: ["tunnel", "--no-autoupdate", "run"]
+    env_file: ./deploy/cloudflared.env
+    mem_limit: 128m
+    cpus: 0.5
+    networks: [cmt]
+
+networks:
+  cmt:
+    name: cmt-net          # shared with the bot (its docker-compose.yml creates it): Jira gateway at cmt-boost:7001
+    external: true

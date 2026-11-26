@@ -1,0 +1,104 @@
+/* ============================================================
+   CMT Console v2.0 — design tokens
+   IBM Plex Sans / IBM Plex Mono, zinc greys, one amber accent.
+   Themes are driven by data-theme on <html> (set in app.js).
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces (zinc) */
+  --bg: #F4F4F5;
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --card-2: #F4F4F5;
+
+  /* ink */
+  --text: #18181B;
+  --muted: #52525B;
+  --faint: #71717A;
+  --border: #E4E4E7;
+  --border-strong: #D4D4D8;
+
+  /* the one accent: amber, as in the admin */
+  --accent: #D97706;
+  --accent-strong: #B45309;
+  --accent-soft: #FEF3C7;
+  --on-accent: #FFFFFF;
+
+  /* semantic signals (colour = meaning, never decoration) */
+  --success: #15803D;
+  --success-soft: #DCFCE7;
+  --teal: #0F766E;
+  --teal-soft: #CCFBF1;
+  --amber: #A16207;
+  --amber-soft: #FEF9C3;
+  --danger: #DC2626;
+  --danger-soft: #FEE2E2;
+  --info: #2563EB;
+
+  /* per-source marks (brand hues, small identifiers only) */
+  --src-reddit: #FF4500;
+  --src-discord: #5865F2;
+  --src-jira: #2684FF;
+  --src-facebook: #1877F2;
+
+  /* flat, as in the admin: no glow, only a soft lift for floating layers */
+  --shadow-sm: none;
+  --shadow-md: 0 8px 24px rgba(9, 9, 11, .10);
+  --shadow-pop: 0 16px 40px rgba(9, 9, 11, .18);
+
+  --r-card: 10px;
+  --r-ctrl: 8px;
+  --r-pill: 6px;
+
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --dur: 150ms;
+
+  --font-display: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --font-ui: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --rail-w: 240px;
+  --rail-w-collapsed: 72px;
+  --topbar-h: 60px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #09090B;
+  --surface: #111113;
+  --card: #18181B;
+  --card-2: #27272A;
+
+  --text: #FAFAFA;
+  --muted: #A1A1AA;
+  --faint: #8A8A93;
+  --border: #27272A;
+  --border-strong: #3F3F46;
+
+  --accent: #F59E0B;
+  --accent-strong: #FBBF24;
+  --accent-soft: #2B1F0A;
+  --on-accent: #18181B;
+
+  --success: #4ADE80;
+  --success-soft: #0F2A19;
+  --teal: #2DD4BF;
+  --teal-soft: #0E2A27;
+  --amber: #FBBF24;
+  --amber-soft: #2A2209;
+  --danger: #F87171;
+  --danger-soft: #2E1414;
+  --info: #93C5FD;
+
+  --src-reddit: #FF6A3D;
+  --src-discord: #8B90F5;
+  --src-jira: #6FA8F5;
+  --src-facebook: #6AA1EF;
+
+  --shadow-sm: none;
+  --shadow-md: 0 10px 26px rgba(0, 0, 0, .5);
+  --shadow-pop: 0 20px 54px rgba(0, 0, 0, .6);
+}

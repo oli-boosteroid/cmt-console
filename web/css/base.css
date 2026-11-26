@@ -1,0 +1,63 @@
+/* ============================================================
+   Base — reset, typography, shared utilities
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 700; }
+h1 { font-family: var(--font-display); font-size: 22px; line-height: 1.2; letter-spacing: -.01em; }
+h2 { font-family: var(--font-display); font-size: 18px; line-height: 1.25; letter-spacing: -.01em; }
+h3 { font-size: 14px; font-weight: 600; letter-spacing: -.005em; }
+p  { margin: 0; }
+
+button { font-family: inherit; font-size: inherit; color: inherit; cursor: pointer; }
+input, textarea { font-family: inherit; font-size: inherit; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+svg { display: block; }
+
+::selection { background: var(--accent-soft); color: var(--text); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* scrollbars - thin, warm */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+*::-webkit-scrollbar { width: 11px; height: 11px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: content-box; }
+
+/* utilities */
+.mono { font-family: var(--font-mono); }
+.serif { font-family: var(--font-display); }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-gap { display: flex; align-items: center; gap: 8px; }
+.stack { display: flex; flex-direction: column; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.ico { width: 20px; height: 20px; flex: none; }
+.ico-sm { width: 16px; height: 16px; flex: none; }

@@ -1,0 +1,9 @@
+# Not part of the Railway build (Dockerfile copies only the app folders).
+.claude/
+.hallmark/
+dev/
+__pycache__/
+*.pyc
+.env
+
+deploy/*.env

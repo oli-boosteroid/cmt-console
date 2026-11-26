@@ -1,0 +1,101 @@
+/* ============================================================
+   CMT Console · Black theme = the Dark theme on pure black
+   (like Discord's black mode). It is NOT a separate layout: the page
+   keeps data-theme="dark" (so every dark rule, size and spacing is the
+   same and nothing can shift) and adds data-variant="black", which only
+   swaps the greys for black surfaces with thin white lines.
+   Loaded last. Fonts stay IBM Plex.
+   ============================================================ */
+
+[data-theme="dark"][data-variant="black"] {
+  /* neutral (no blue tint) text greys */
+  --gray-400: oklch(.72 0 0);
+  --gray-500: oklch(.58 0 0);
+  --gray-800: #141414;
+  --gray-900: #000;
+  --gray-950: #000;
+  --ring: rgb(255 255 255 / .1);
+  --ring-field: rgb(255 255 255 / .16);
+
+  --lg-glass: #000;
+  --lg-glass-solid: #000;
+  --lg-sticky: #000;
+  --lg-sheet: #000;
+  --lg-sheet-inner: rgb(255 255 255 / .02);
+  --lg-field: rgb(255 255 255 / .04);
+  --lg-hover: rgb(255 255 255 / .06);
+  --lg-lift: 0 0 0 0 transparent;   /* not "none": it sits inside comma lists with the rim, and none would drop the rim too */
+
+  --bg: #000;
+  --surface: #000;
+  --card: #000;
+  --card-2: rgb(255 255 255 / .04);
+  --border: var(--ring);
+  --border-strong: rgb(255 255 255 / .14);
+  --muted: var(--gray-400);
+  --faint: var(--gray-500);
+  --desk-sticky: #000;
+  --sticky-bg: #000;
+  --dialog-bg: #000;
+  --overlay: rgb(0 0 0 / .7);
+}
+html[data-theme="dark"][data-variant="black"],
+[data-theme="dark"][data-variant="black"] body { background: #000 !important; }
+[data-theme="dark"][data-variant="black"] .btn { background-color: rgb(255 255 255 / .04) !important; }
+[data-theme="dark"][data-variant="black"] .btn:not([disabled]):hover { background-color: rgb(255 255 255 / .08) !important; }
+[data-theme="dark"][data-variant="black"] .btn.primary { background-color: var(--primary-600) !important; }
+[data-theme="dark"][data-variant="black"] .btn.primary:hover { background-color: var(--primary-500) !important; }
+[data-theme="dark"][data-variant="black"] .btn.mods { background-color: color-mix(in oklab, var(--primary-500) 10%, transparent) !important; }
+[data-theme="dark"][data-variant="black"] .btn.danger { background-color: oklch(.577 .245 27.325) !important; }
+[data-theme="dark"][data-variant="black"] .btn.ghost { background-color: transparent !important; }
+[data-theme="dark"][data-variant="black"] .btn.ghost:hover { background-color: rgb(255 255 255 / .05) !important; }
+[data-theme="dark"][data-variant="black"] select option { background: #000; }
+[data-theme="dark"][data-variant="black"] .overlay { background: rgb(0 0 0 / .7); }
+[data-theme="dark"][data-variant="black"] .modal,
+[data-theme="dark"][data-variant="black"] #popover { background: #000 !important; box-shadow: 0 0 0 1px rgb(255 255 255 / .14), 0 25px 50px -12px rgb(0 0 0 / .8) !important; }
+
+/* ---------- design picker (the "Change design" window; all themes) ---------- */
+#modal-box.modal-wide { width: min(1060px, 94vw) !important; max-width: none !important; }
+.tp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.tp-card {
+  display: flex; flex-direction: column; gap: 10px; text-align: left; padding: 14px;
+  border-radius: 14px; border: 1px solid var(--border); background: var(--card-2, transparent);
+  color: var(--text); cursor: pointer; font: inherit; min-width: 0;
+}
+.tp-card:hover { border-color: var(--border-strong); }
+.tp-card.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.tp-name { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
+.tp-radio { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border-strong); flex: none; display: grid; place-items: center; }
+.tp-card.on .tp-radio { border-color: var(--accent); background: var(--accent); }
+.tp-card.on .tp-radio::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+.tp-desc { font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+
+/* the miniature console in each card: drawn with that design's own colours */
+.tp-prev {
+  position: relative; aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden;
+  display: grid; grid-template-columns: 26% 1fr; gap: 6px; padding: 6px;
+  background: var(--p-bg); box-shadow: inset 0 0 0 1px var(--p-line);
+}
+.tp-side, .tp-cardm { background: var(--p-panel); border-radius: 5px; box-shadow: inset 0 0 0 1px var(--p-line); }
+.tp-side { display: flex; flex-direction: column; gap: 5px; padding: 7px 6px; }
+.tp-side i { display: block; height: 5px; border-radius: 3px; background: var(--p-faint); opacity: .55; }
+.tp-side i.on { background: var(--p-accent); opacity: 1; }
+.tp-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tp-top { height: 14px; border-radius: 5px; background: var(--p-panel); box-shadow: inset 0 0 0 1px var(--p-line); display: flex; align-items: center; justify-content: space-between; padding: 0 5px; }
+.tp-top b { width: 34%; height: 4px; border-radius: 2px; background: var(--p-text); opacity: .8; }
+.tp-top span { width: 14px; height: 6px; border-radius: 3px; background: var(--p-accent); }
+.tp-cardm { flex: 1; display: flex; flex-direction: column; gap: 0; padding: 4px 6px; }
+.tp-row { flex: 1; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--p-line); }
+.tp-row:last-child { border-bottom: 0; }
+.tp-row i { width: 7px; height: 7px; border-radius: 50%; background: var(--p-faint); flex: none; }
+.tp-row em { height: 4px; border-radius: 2px; background: var(--p-text); opacity: .55; flex: 1; max-width: 70%; }
+.tp-row s { margin-left: auto; width: 12px; height: 5px; border-radius: 3px; background: var(--p-accent); opacity: .85; }
+.tp-dark   { --p-bg: #09090b; --p-panel: #18181b; --p-line: rgb(255 255 255 / .1); --p-text: #fff; --p-faint: #a1a1aa; --p-accent: #f59e0b; }
+.tp-black  { --p-bg: #000; --p-panel: #000; --p-line: rgb(255 255 255 / .14); --p-text: #fff; --p-faint: #b5b5b5; --p-accent: #f59e0b; }
+.tp-light  { --p-bg: #f4f4f5; --p-panel: #fff; --p-line: rgb(9 9 11 / .09); --p-text: #09090b; --p-faint: #a1a1aa; --p-accent: #d97706; }
+.tp-glassy {
+  --p-bg: #090d1c; --p-panel: rgb(42 48 74 / .5); --p-line: rgb(255 255 255 / .16); --p-text: #f2f4fb; --p-faint: #b3bad3; --p-accent: #5b9cf5;
+  background: radial-gradient(45% 45% at 22% 26%, #2546b8, transparent), radial-gradient(40% 45% at 78% 24%, #7a2a97, transparent), radial-gradient(45% 45% at 52% 82%, #0c6a78, transparent), #090d1c;
+}
+.tp-glassy .tp-side, .tp-glassy .tp-cardm, .tp-glassy .tp-top { backdrop-filter: blur(6px); }
+@media (max-width: 760px) { .tp-grid { grid-template-columns: 1fr; } }

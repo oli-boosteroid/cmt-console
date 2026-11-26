@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<title>Known Issues</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E">
+<link href="/knownissues-fonts/knownissues-fonts.css" rel="stylesheet">
+<style>
+
+:root{
+  color-scheme: dark;
+  /* paper / ink / tinted neutrals (zinc, hue 286) */
+  --paper: oklch(.15 .005 286);
+  --sheet: oklch(.205 .006 286);
+  --well: oklch(.18 .006 286);
+  --raise: oklch(.245 .007 286);
+  --hover: oklch(.255 .007 286);
+  --ink: oklch(.965 .004 286);
+  --muted: oklch(.74 .014 286);
+  --faint: oklch(.6 .015 286);
+  --line: oklch(.29 .007 286);
+  --line-strong: oklch(.36 .009 286);
+  --scrim: oklch(.1 .01 286 / .82);
+  --lb-bg: oklch(.11 .006 286 / .985);
+  --shade: oklch(.08 .01 286 / .5);
+  /* one accent (amber) + its ink */
+  --accent: oklch(.8 .17 75);
+  --accent-fill: oklch(.68 .17 60);
+  --accent-fill-hover: oklch(.74 .17 66);
+  --accent-ink: oklch(.18 .03 60);
+  --accent-soft: oklch(.8 .17 75 / .12);
+  --accent-line: oklch(.8 .17 75 / .35);
+  --danger: oklch(.7 .19 22);
+  --on-fill: oklch(.99 .003 286);
+
+  --font-ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+
+  /* spacing scale */
+  --s-3xs: 2px; --s-2xs: 4px; --s-xs: 8px; --s-sm: 12px; --s-md: 16px; --s-lg: 24px; --s-xl: 40px; --s-2xl: 64px;
+  --r-lg: 14px; --r-md: 10px; --r-sm: 6px; --r-pill: 999px;
+  --ease-out: cubic-bezier(.22,1,.36,1);
+  --t-micro: 120ms; --t-short: 220ms;
+  --list-w: 380px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;overflow-x:clip}
+html{scrollbar-gutter:stable}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;font-synthesis:none}
+a{color:var(--accent);text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;color:inherit}
+h1,h2,h3{text-wrap:balance;overflow-wrap:break-word;min-width:0}
+p,.solution{text-wrap:pretty}
+
+.wrap{max-width:1280px;margin:0 auto;padding:var(--s-lg) var(--s-lg) 120px}
+
+/* ---- head ---- */
+.head{display:flex;align-items:center;gap:var(--s-md);margin-bottom:var(--s-lg)}
+.head .search{flex:0 1 420px;margin-left:auto}
+.mark{width:40px;height:40px;border-radius:var(--r-md);flex:none;background:var(--accent-fill);color:var(--accent-ink);display:grid;place-items:center}
+.mark svg{width:20px;height:20px}
+.head-t{flex:0 1 auto;min-width:0}
+h1{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1;margin:0}
+.updated{color:var(--faint);font-size:14px;margin-top:var(--s-2xs)}
+.updated .num{font-variant-numeric:tabular-nums}
+
+/* ---- buttons (app UI: 36-40px) ---- */
+.btn{appearance:none;border:1px solid var(--line-strong);background:var(--sheet);color:var(--ink);font-weight:600;font-size:14px;min-height:38px;padding:0 var(--s-md);border-radius:var(--r-pill);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:var(--s-xs);white-space:nowrap;text-decoration:none;transition:background-color var(--t-micro) var(--ease-out),border-color var(--t-micro) var(--ease-out),transform var(--t-micro) var(--ease-out)}
+.btn:hover{background:var(--hover);border-color:var(--faint)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn svg{width:16px;height:16px;flex:none}
+.btn.primary{background:var(--accent-fill);border-color:transparent;color:var(--accent-ink)}
+.btn.primary:hover{background:var(--accent-fill-hover)}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.quiet:hover{background:var(--hover);color:var(--ink)}
+.btn.sm{min-height:32px;font-size:13px;padding:0 var(--s-sm)}
+
+/* ---- tab rail: full width above both panes, every tab shows its count ---- */
+.tabs{display:flex;gap:var(--s-2xs);border-bottom:1px solid var(--line);margin-bottom:var(--s-lg);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.stab{appearance:none;border:0;background:transparent;color:var(--muted);font-size:15px;font-weight:600;padding:var(--s-sm) var(--s-md);margin-bottom:-1px;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--s-xs);transition:color var(--t-micro) var(--ease-out),border-color var(--t-micro) var(--ease-out)}
+.stab:hover{color:var(--ink)}
+.stab.active{color:var(--ink);border-bottom-color:var(--accent)}
+.stab .tc{font-size:13px;font-weight:400;color:var(--faint);font-variant-numeric:tabular-nums}
+.stab.active .tc{color:var(--accent)}
+
+/* ---- two panes: FIXED track widths, identical on every tab ---- */
+.ki{display:grid;grid-template-columns:var(--list-w) minmax(0,1fr);gap:var(--s-lg);align-items:start}
+.side{position:sticky;top:var(--s-md);display:flex;flex-direction:column;gap:var(--s-sm);max-height:calc(100dvh - var(--s-xl));min-width:0}
+.search{display:flex;align-items:center;gap:var(--s-xs);background:var(--sheet);border:1px solid var(--line-strong);border-radius:var(--r-md);padding:0 var(--s-sm);min-height:42px}
+.search:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+.search svg{width:16px;height:16px;color:var(--faint);flex:none}
+.search input{border:0;background:transparent;color:var(--ink);font:inherit;font-size:15px;width:100%;outline:none;min-width:0;padding:var(--s-xs) 0}
+.search input::placeholder{color:var(--faint)}
+.lsearch{min-height:38px;background:var(--well)}
+.lsearch input{font-size:14px}
+.cat-h{display:flex;align-items:center;gap:var(--s-xs);font-size:13px;font-weight:600;color:var(--muted);padding:var(--s-sm) var(--s-sm) var(--s-2xs);scroll-margin-top:var(--s-xs)}
+.cat-h:not(:first-child){border-top:1px solid var(--line);margin-top:var(--s-xs)}
+.cat-h .num{font-weight:400;color:var(--faint);font-variant-numeric:tabular-nums}
+.stab.none{color:var(--faint)}
+.list{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:var(--s-3xs);padding-right:var(--s-2xs);margin-right:calc(var(--s-2xs) * -1)}
+.letter{font-size:13px;font-weight:600;color:var(--faint);padding:var(--s-sm) var(--s-sm) var(--s-2xs)}
+.gi{appearance:none;border:0;background:transparent;color:var(--ink);font-size:15px;text-align:left;display:flex;align-items:flex-start;gap:var(--s-xs);padding:var(--s-xs) var(--s-sm);border-radius:var(--r-md);cursor:pointer;min-height:40px;transition:background-color var(--t-micro) var(--ease-out)}
+.gi:hover{background:var(--hover)}
+.gi.active{background:var(--raise);color:var(--accent)}
+.gi .gt{flex:1;min-width:0;line-height:1.4;padding-top:1px}
+.gi.one .gt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gi.two .gt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gi .meta{flex:none;display:flex;align-items:center;gap:6px;padding-top:2px}
+.gi .cnt{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:22px;text-align:center;border-radius:var(--r-sm);padding:1px 6px;background:var(--well)}
+.gi .lch{font-size:12px;color:var(--faint);border:1px solid var(--line);border-radius:var(--r-sm);padding:0 6px}
+.gi.nogame .gt{color:var(--muted)}
+.other-h{font-size:13px;font-weight:600;color:var(--faint);padding:var(--s-md) var(--s-sm) var(--s-2xs);border-top:1px solid var(--line);margin-top:var(--s-xs)}
+
+/* ---- reader ---- */
+.detail{min-width:0;display:flex;flex-direction:column;gap:var(--s-md)}
+.dhead{padding-bottom:var(--s-xs)}
+.dhead h2{margin:0;font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+.dsub{color:var(--faint);font-size:14px;margin-top:var(--s-xs);display:flex;flex-wrap:wrap;gap:var(--s-xs) var(--s-md)}
+.dsub .num{font-variant-numeric:tabular-nums;color:var(--muted)}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s-lg)}
+.problem{font-weight:600;font-size:19px;line-height:1.3;margin:0 0 var(--s-xs)}
+.solution{color:var(--muted);font-size:16px;white-space:pre-wrap;word-break:break-word;max-width:75ch}
+.solution a{word-break:break-all}
+.foot{margin-top:var(--s-md);display:flex;gap:var(--s-xs);flex-wrap:wrap}
+/* "Suggest ..." for what an issue lacks: visible, but a dashed outline keeps it below the real actions */
+.btn.sugg{background:transparent;border-style:dashed;color:var(--muted);font-weight:400}
+.btn.sugg:hover{color:var(--ink);border-color:var(--accent);background:transparent}
+
+/* screenshots: a real gallery inside the issue - the first one large, the rest as a strip */
+.shots{margin-top:var(--s-md);display:flex;flex-wrap:wrap;gap:var(--s-xs)}
+.shot{appearance:none;display:block;flex:none;width:168px;aspect-ratio:16/10;padding:0;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--well);cursor:zoom-in;transition:border-color var(--t-micro) var(--ease-out)}
+.shot:hover{border-color:var(--accent-line)}
+.shot img{display:block;width:100%;height:100%;object-fit:cover}
+.shots.inline{justify-content:center}
+/* one screenshot: the same frame for every size (small ones scale up, big ones down) so text stays readable */
+.shots.inline .shot{width:min(100%,720px);aspect-ratio:16/9;max-height:440px;background:transparent}
+/* the frame is sized BEFORE the image loads (16:9, card width up to 720px), so nothing grows on screen */
+.shots.inline .shot img{width:100%;height:100%;object-fit:contain}
+
+.canned{margin-top:var(--s-md);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--well)}
+.canned-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-xs);padding:var(--s-2xs) var(--s-2xs) var(--s-2xs) var(--s-sm);border-bottom:1px solid var(--line)}
+.btn.copybtn{min-height:36px;padding:0 var(--s-md);font-size:14px;color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
+.btn.copybtn:hover{background:var(--accent-fill);border-color:transparent;color:var(--accent-ink)}
+.btn.copybtn.copied{color:var(--accent-ink);background:var(--accent-fill);border-color:transparent}
+.canned-label{font-size:13px;font-weight:600;color:var(--muted)}
+.canned-body{padding:var(--s-sm);font-size:15px;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.nothere{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:var(--r-lg);padding:var(--s-md);display:flex;align-items:center;gap:var(--s-sm);flex-wrap:wrap;color:var(--muted);font-size:15px}
+.nothere b{color:var(--ink)}
+.back{display:none}
+.empty{color:var(--muted);padding:var(--s-xl) var(--s-sm);font-size:15px}
+.loading{color:var(--faint);padding:var(--s-2xl) var(--s-lg);text-align:center}
+
+/* ---- screenshot viewer ---- */
+.lb{position:fixed;inset:0;z-index:70;background:var(--lb-bg);display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:var(--s-md)}
+.lb-top{display:flex;align-items:center;gap:var(--s-sm);color:var(--muted);font-size:14px}
+.lb-top .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-weight:600}
+.lb-top .num{font-variant-numeric:tabular-nums}
+.lb-stage{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:var(--s-xs);min-height:0;padding:var(--s-md) 0}
+/* the image fills the stage (small error-dialog shots scale up so the text is readable), never cropped */
+.lb-stage img{width:100%;height:100%;display:block;object-fit:contain;min-height:0}
+.lb-imgbox{grid-column:2;min-height:0;min-width:0;height:100%}
+.lb-nav{appearance:none;border:1px solid var(--line-strong);background:var(--sheet);color:var(--ink);width:44px;height:44px;border-radius:var(--r-pill);cursor:pointer;display:grid;place-items:center}
+.lb-nav:hover{background:var(--hover)}
+.lb-nav svg{width:20px;height:20px}
+.lb-bottom{display:flex;justify-content:center}
+
+/* ---- modal (suggest form) ---- */
+.scrim{position:fixed;inset:0;background:var(--scrim);display:none;align-items:flex-start;justify-content:center;padding:var(--s-xl) var(--s-md);overflow-y:auto;z-index:40}
+.scrim.open{display:flex}
+.modal{background:var(--sheet);border:1px solid var(--line-strong);border-radius:var(--r-lg);width:100%;max-width:640px;margin:auto 0}
+.modal-head{display:flex;align-items:center;gap:var(--s-sm);padding:var(--s-md) var(--s-lg);border-bottom:1px solid var(--line)}
+.modal-head h2{margin:0;font-size:18px;font-weight:600;flex:1;min-width:0}
+.modal-x{appearance:none;border:0;background:transparent;color:var(--faint);cursor:pointer;width:36px;height:36px;border-radius:var(--r-pill);display:grid;place-items:center}
+.modal-x:hover{background:var(--hover);color:var(--ink)}
+.modal-x svg{width:18px;height:18px}
+.modal-body{padding:var(--s-lg)}
+.modal-foot{padding:var(--s-sm) var(--s-lg);border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:var(--s-xs)}
+.field{margin-bottom:var(--s-md);position:relative}
+.field label{display:block;font-size:14px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;background:var(--well);border:1px solid var(--line-strong);border-radius:var(--r-md);padding:9px var(--s-sm);font:inherit;font-size:15px;color:var(--ink)}
+.field input:focus-visible,.field textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field textarea{min-height:88px;resize:vertical}
+.note{background:var(--accent-soft);color:var(--muted);border-radius:var(--r-md);padding:var(--s-sm) var(--s-md);font-size:14px;margin-bottom:var(--s-md)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.req{color:var(--danger)}
+.hint{font-size:13px;font-weight:400;color:var(--faint);margin-top:6px}
+label .hint{margin:0 0 0 var(--s-xs);font-variant-numeric:tabular-nums}
+.picks{display:flex;flex-wrap:wrap;gap:var(--s-xs)}
+.pick,.pick-add{position:relative;width:96px;height:68px;border-radius:var(--r-md);flex:none}
+.pick img{display:block;width:100%;height:100%;object-fit:cover;border-radius:var(--r-md);border:1px solid var(--line)}
+.pick button{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:1px solid var(--line-strong);background:var(--raise);color:var(--ink);font-size:15px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.pick button:hover{background:var(--hover)}
+.field .pick-add,.pick-add{border:1px dashed var(--line-strong);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:13px;cursor:pointer;transition:border-color var(--t-micro) var(--ease-out),color var(--t-micro) var(--ease-out)}
+.pick-add:hover{border-color:var(--accent);color:var(--ink)}
+.pick-add:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.pick-add svg{width:18px;height:18px}
+.ent-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--s-xs)}
+.ent-chip{display:inline-flex;align-items:center;gap:var(--s-2xs);max-width:100%;padding:3px var(--s-2xs) 3px var(--s-sm);border-radius:var(--r-pill);background:var(--raise);border:1px solid var(--line);font-size:14px}
+.ent-chip button{appearance:none;border:0;background:transparent;color:var(--faint);font-size:16px;line-height:1;width:24px;height:24px;border-radius:50%;cursor:pointer}
+.ent-chip button:hover{color:var(--ink);background:var(--hover)}
+.ac{position:absolute;left:0;right:0;top:100%;margin-top:var(--s-2xs);background:var(--sheet);border:1px solid var(--line-strong);border-radius:var(--r-md);box-shadow:0 18px 40px -16px var(--shade);padding:var(--s-2xs);z-index:5;display:none;max-height:260px;overflow-y:auto}
+.ac.open{display:block}
+.ac button{appearance:none;border:0;background:transparent;color:var(--ink);font-size:14px;width:100%;text-align:left;padding:var(--s-xs) var(--s-sm);border-radius:var(--r-sm);cursor:pointer;display:flex;align-items:center;gap:var(--s-xs)}
+.ac button:hover,.ac button.hl{background:var(--hover)}
+.ac button .gt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ac button .lch{font-size:12px;color:var(--faint);border:1px solid var(--line);border-radius:var(--r-sm);padding:0 6px}
+.ac .ac-empty{padding:var(--s-xs) var(--s-sm);color:var(--faint);font-size:13px}
+
+/* ---- feedback about the page ---- */
+.fb-fab{position:fixed;right:var(--s-lg);bottom:var(--s-lg);width:52px;height:52px;border-radius:var(--r-pill);border:0;background:var(--accent-fill);color:var(--accent-ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -8px var(--shade);z-index:30;transition:transform var(--t-micro) var(--ease-out),background-color var(--t-micro) var(--ease-out)}
+.fb-fab:hover{background:var(--accent-fill-hover)}
+.fb-fab:active{transform:scale(.96)}
+.fb-fab svg{width:22px;height:22px}
+.fb-panel{position:fixed;right:var(--s-lg);bottom:88px;z-index:35;width:min(360px,calc(100vw - 20px));display:none;flex-direction:column;overflow:hidden;background:var(--sheet);border:1px solid var(--line-strong);border-radius:var(--r-lg);box-shadow:0 25px 50px -12px var(--shade)}
+.fb-panel.open{display:flex}
+.fb-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-sm);padding:var(--s-sm) var(--s-md);border-bottom:1px solid var(--line)}
+.fb-head-t span{font-size:16px;font-weight:600}
+.fb-x{appearance:none;border:0;width:32px;height:32px;flex:none;border-radius:var(--r-pill);display:grid;place-items:center;background:transparent;color:var(--faint);font-size:20px;line-height:1;cursor:pointer}
+.fb-x:hover{background:var(--hover);color:var(--ink)}
+.fb-body{padding:var(--s-md);display:flex;flex-direction:column;gap:var(--s-xs)}
+.fb-lbl{font-size:14px;font-weight:600;color:var(--muted)}
+.fb-cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-xs);margin-bottom:var(--s-2xs)}
+.fb-cat{appearance:none;border:1px solid var(--line-strong);cursor:pointer;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:6px;padding:var(--s-sm) 6px;border-radius:var(--r-md);background:var(--well);transition:background-color var(--t-micro) var(--ease-out),border-color var(--t-micro) var(--ease-out),color var(--t-micro) var(--ease-out)}
+.fb-cat svg{width:20px;height:20px}
+.fb-cat:hover{color:var(--ink);border-color:var(--faint)}
+.fb-cat.on{color:var(--ink);background:var(--accent-soft);border-color:var(--accent)}
+.fb-body textarea,.fb-body input:not(.hp){width:100%;background:var(--well);border:1px solid var(--line-strong);border-radius:var(--r-md);padding:9px var(--s-sm);font:inherit;font-size:15px;color:var(--ink)}
+.fb-body textarea{min-height:96px;resize:vertical}
+.fb-count{display:flex;align-items:center;gap:var(--s-sm);font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.fb-bar{flex:1;height:3px;border-radius:3px;background:var(--line);overflow:hidden}
+.fb-bar i{display:block;height:100%;width:0;background:var(--accent)}
+.fb-send{width:100%;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:var(--s-lg);transform:translateX(-50%) translateY(12px);background:var(--raise);border:1px solid var(--line-strong);color:var(--ink);padding:var(--s-xs) var(--s-md);border-radius:var(--r-pill);font-size:14px;opacity:0;pointer-events:none;transition:opacity var(--t-short) var(--ease-out),transform var(--t-short) var(--ease-out);z-index:80}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+*{scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+
+/* ---- tablet: narrower list ---- */
+@media (max-width:1000px){ :root{--list-w:300px} .wrap{padding:var(--s-md) var(--s-md) 110px} .dhead h2{font-size:26px} }
+/* ---- phone: list screen, then the issue screen ---- */
+@media (max-width:760px){
+  .wrap{padding:var(--s-sm) var(--s-md) 96px}
+  h1{font-size:22px}
+  .mark{width:36px;height:36px}
+  .head{margin-bottom:var(--s-md);flex-wrap:wrap;row-gap:var(--s-sm)}
+  .head-t{flex:1 1 auto}
+  .head .search{order:3;flex:1 1 100%;margin-left:0}
+  body.show-detail .head .search{display:none}
+  .head .btn .lbl{display:none}
+  .head .btn{width:40px;padding:0}
+  .tabs{margin:0 calc(var(--s-md) * -1) var(--s-md);padding:0 var(--s-xs)}
+  .stab{padding:var(--s-sm)}
+  .ki{display:block}
+  .side{position:static;max-height:none}
+  .list{overflow:visible;margin-right:0;padding-right:0}
+  .detail{display:none}
+  body.show-detail .side,body.show-detail .tabs{display:none}
+  body.show-detail .detail{display:flex}
+  .back{display:inline-flex;align-self:flex-start}
+  .dhead h2{font-size:24px}
+  .card{padding:var(--s-md)}
+  .shot{width:calc((100% - 2 * var(--s-xs)) / 3)}
+  .lb{padding:var(--s-sm)}
+  .lb-stage{grid-template-columns:minmax(0,1fr)}
+  .lb-imgbox{grid-column:1}
+  .lb-stage .lb-nav{display:none}
+  .lb-bottom .lb-nav{display:grid}
+  .fb-fab{right:var(--s-md);bottom:var(--s-md);width:48px;height:48px}
+  .fb-panel{right:10px;left:10px;width:auto;bottom:72px}
+}
+@media (min-width:761px){ .lb-bottom{display:none} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"><path d="M5 20V4l1-1h13v15H6l-1 1v1l1 1h13"/></svg></div>
+    <div class="head-t">
+      <h1>Known Issues</h1>
+      <div class="updated" id="updated" hidden></div>
+    </div>
+    <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="search" autocomplete="off" placeholder="Search all known issues" aria-label="Search all known issues"></label>
+    <button class="btn primary" id="suggest-btn" aria-label="Suggest issue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="lbl" id="suggest-label">Suggest issue</span></button>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Categories"></nav>
+  <div class="ki" id="ki">
+    <aside class="side" aria-label="Known issues list">
+      <label class="search lsearch" id="lsearch-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        <input id="lsearch" type="search" autocomplete="off" placeholder="Filter games" aria-label="Filter this category"></label>
+      <div id="grid" class="list"></div>
+    </aside>
+    <main class="detail" id="detail" aria-live="polite"></main>
+  </div>
+  <div id="stage" class="loading">Loading known issues</div>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Screenshot viewer" hidden>
+  <div class="lb-top"><span class="t" id="lb-title"></span><span class="num" id="lb-count"></span>
+    <a class="btn sm quiet" id="lb-open" href="#" target="_blank" rel="noopener noreferrer">Open original</a>
+    <button class="btn sm" data-lb-close>Close</button></div>
+  <div class="lb-stage">
+    <button class="lb-nav" data-lb-step="-1" aria-label="Previous screenshot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <div class="lb-imgbox"><img id="lb-img" alt="Screenshot"></div>
+    <button class="lb-nav" data-lb-step="1" aria-label="Next screenshot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+  <div class="lb-bottom"><button class="lb-nav" data-lb-step="-1" aria-label="Previous screenshot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><span style="width:16px"></span><button class="lb-nav" data-lb-step="1" aria-label="Next screenshot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div>
+</div>
+
+<button class="fb-fab" id="fb-btn" title="Send feedback" aria-label="Send feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M6 4h12l3 3v7l-3 3h-8l-5 4v-4l-2-2V7z"/><path d="M8 9h8M8 12.5h5"/></svg></button>
+
+<div class="fb-panel" id="fb-panel" role="dialog" aria-label="Send feedback">
+  <div class="fb-head"><div class="fb-head-t"><span>Feedback about this page</span></div><button class="fb-x" id="fb-close" aria-label="Close">&times;</button></div>
+  <div class="fb-body">
+    <input type="text" class="hp" id="fb-website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <span class="fb-lbl" id="fb-cat-lbl">Category</span>
+    <div class="fb-cats" role="radiogroup" aria-labelledby="fb-cat-lbl">
+      <button type="button" class="fb-cat" data-fbcat="Bug" role="radio" aria-checked="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 7h6l3 3v6l-3 3H9l-3-3v-6z"/><path d="M12 9v10M6 13H3M21 13h-3M7 8L5 6M17 8l2-2M7 18l-2 2M17 18l2 2"/></svg><span>Bug</span></button>
+      <button type="button" class="fb-cat" data-fbcat="Suggestion" role="radio" aria-checked="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 3h6l3 3v5l-3 4H9l-3-4V6z"/><path d="M9 18h6M10 21h4"/></svg><span>Suggestion</span></button>
+      <button type="button" class="fb-cat" data-fbcat="Question" role="radio" aria-checked="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M9 3h6l6 6v6l-6 6H9l-6-6V9z"/><path d="M10 9.5l1-1.5h2l1.5 1.5v1.5l-2.5 2v1.5"/><rect x="11" y="16.4" width="2" height="2" fill="currentColor" stroke="none"/></svg><span>Question</span></button>
+    </div>
+    <label class="fb-lbl" for="fb-msg">Message</label>
+    <textarea id="fb-msg" maxlength="2000" placeholder="Your message"></textarea>
+    <div class="fb-count"><span class="fb-bar"><i id="fb-bar"></i></span><span id="fb-count">0 / 2000</span></div>
+    <label class="fb-lbl" for="fb-name">Your name (optional)</label>
+    <input id="fb-name" maxlength="80">
+    <button class="btn primary fb-send" id="fb-send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M21 3L10 14M21 3l-6 18-5-7-7-5z"/></svg>Send feedback</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/knownissues.js?v=19"></script>
+</body>
+</html>
