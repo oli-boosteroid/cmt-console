@@ -1,16 +1,7 @@
 """
-Jira HTTP for the console, with or without the Jira key.
-
-Two modes, chosen by environment:
-  - JIRA_GATEWAY_URL set (console on the corporate VM): the console holds NO Jira credentials. Every call to
-    the Jira host is forwarded to the bot's internal Jira gateway (cmt-boost-main/services/jira_gateway.py)
-    on the Docker network, which adds the credentials, allows only the Jira API paths the console uses and
-    logs who asked. Auth to the gateway: JIRA_GATEWAY_TOKEN (useless outside the VM network).
-  - otherwise (today on Railway): direct calls with JIRA_API_EMAIL / JIRA_API_TOKEN, as before.
-
-The module mirrors the parts of `requests` the console uses (get / post / put / request, and any other
-attribute such as RequestException is delegated), so console_api.py imports it as `requests` and every call
-site stays the same. Calls to other hosts (e.g. the Steam store search) go straight to `requests`.
+Jira HTTP for the console. With JIRA_GATEWAY_URL set, calls to the Jira host go through the bot's Jira gateway
+(JIRA_GATEWAY_TOKEN) and the console has no Jira key; otherwise Jira is called directly with JIRA_API_EMAIL /
+JIRA_API_TOKEN. Mirrors the parts of `requests` the console uses, so console_api.py imports it as `requests`.
 """
 import logging
 import os

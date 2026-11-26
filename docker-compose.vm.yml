@@ -1,13 +1,7 @@
-# CMT Console on the corporate VM (next to the CMT bot). See docs/vm-deploy.md.
-#
-#   docker compose -f docker-compose.vm.yml up -d --build                      # console (+ public Known Issues page)
-#   docker compose -f docker-compose.vm.yml --profile tunnel up -d --build     # + Cloudflare Tunnel (option A)
-#
-# No port is opened to the outside: the console listens on 127.0.0.1 only (for a DevOps reverse proxy, option B),
-# and with the tunnel profile cloudflared reaches it over the Docker network. The console also serves the public
-# Known Issues page (/knownissues, /api/console/public/*); public_app.py can run that part on its own later.
-# Secrets live in deploy/*.env on the VM (never in git, never in the image).
-
+# CMT Console on the VM (docs/vm-deploy.md).
+#   docker compose -f docker-compose.vm.yml up -d --build
+#   docker compose -f docker-compose.vm.yml --profile tunnel up -d --build   # with Cloudflare Tunnel
+# The console listens on 127.0.0.1:8080. Secrets are in deploy/*.env on the VM.
 x-hardening: &hardening
   read_only: true
   tmpfs: ["/tmp"]

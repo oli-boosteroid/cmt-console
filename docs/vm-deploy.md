@@ -42,7 +42,7 @@ whole database is under 1 GB and the hot part fits the cache. Heavy data (images
 ## Order of the first deployment
 
 1. **Answers / setup**: option A or B for access, a DNS name, OAuth client "Internal" in the company Google Cloud.
-2. **MongoDB**: `cd ~/cmt-boost/deploy/mongo && ./init.sh` (section below), then the nightly dump in root's crontab.
+2. **MongoDB**: `cd ~/cmt-boost/deploy/mongo && ./init.sh` (section below).
 3. **Data**: `cmt-boost-main/additional_scripts/migrate_to_vm_mongo.sh rehearse`, then `compare_counts.py`; in the
    maintenance window `... final` (bot and console stopped), `compare_counts.py` again.
 4. **Bot**: put `JIRA_GATEWAY_TOKEN` (new random value) and the `cmt_bot` URIs printed by `init.sh` into the bot's
@@ -55,11 +55,8 @@ whole database is under 1 GB and the hot part fits the cache. Heavy data (images
 
 Our own MongoDB container, defined in the bot repo `deploy/mongo/`:
 
-- `mongo:4.4.6` (pinned: newer MongoDB needs the AVX CPU instructions, which this VM does not provide reliably; our
-  code uses only queries and change streams that 4.4 supports), container `cmt-mongo`, on the Docker network
-  `cmt-net`; port 27017 is **not** published, so only our containers reach it. The 4.4 image has the legacy `mongo`
-  shell, not `mongosh`. 4.4 no longer gets security updates; this is acceptable only because the database is not
-  reachable from outside Docker.
+- `mongo:4.4.6` (MongoDB 5+ needs AVX, which this VM lacks), container `cmt-mongo` on the Docker network
+  `cmt-net`; port 27017 is not published. The image has the legacy `mongo` shell, not `mongosh`.
 - A compose project of its own: `~/deploy.sh` and `~/deploy-console.sh` never stop or recreate the database;
   `restart: unless-stopped` brings it back after a VM reboot. Data lives in the Docker volume `cmt-mongo-data`
   (outside the git checkout). Never run `docker compose down -v` in `deploy/mongo` (it deletes the volume).
@@ -81,18 +78,12 @@ It checks the network, creates the key file and random passwords
 | `admin` | root, for maintenance and the data move only |
 | `cmt_bot` | readWrite on `reddit_posts` and `reddit_snapshots` |
 | `cmt_console` | readWrite on `reddit_posts`, read on `reddit_snapshots` (narrowed later as console writes move to the bot) |
-| `cmt_backup` | backup role, used by the nightly dump |
+| `cmt_backup` | backup role, used by `dump.sh` |
 
-At the end it prints the connection strings for the bot `.env` and `deploy/console.env`, plus the crontab line.
+At the end it prints the connection strings for the bot `.env` and `deploy/console.env`.
 
-Nightly dump onto the same VM (`deploy/mongo/dump.sh`): one gzip archive in `/var/backups/cmt-mongo`, the newest 3
-are kept. It protects against deleted or broken data, not against losing the VM disk (owner's decision: no copy
-off the VM for now). Restore instructions are in the header of `dump.sh`.
-
-```bash
-sudo crontab -e        # add:  30 3 * * * /home/<you>/cmt-boost/deploy/mongo/dump.sh >> /var/log/cmt-mongo-dump.log 2>&1
-sudo ~/cmt-boost/deploy/mongo/dump.sh       # one dump now, to check it works
-```
+Manual dump onto the same VM: `sudo ~/cmt-boost/deploy/mongo/dump.sh` writes a gzip archive to
+`/var/backups/cmt-mongo` and keeps the newest 3. Restore: see the header of `dump.sh`.
 
 The bot refuses any queued console action without a signed-in author, except the few system actions listed in
 `cmt-boost-main/services/action_policy.py`.

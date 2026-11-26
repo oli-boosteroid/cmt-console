@@ -1,19 +1,8 @@
 #!/usr/bin/env bash
-#
-# CMT Console - one-shot VM deploy (same flow as the bot's additional_scripts/deploy.sh).
-#
-#   pull latest from GitHub (token from a file, no prompt) -> rebuild -> restart -> show status
-#
-# FIRST-TIME SETUP on the VM:
-#   1) git clone the console repo to ~/cmt-console
-#   2) cp deploy/console.env.example deploy/console.env, fill it in, chmod 600 deploy/*.env
-#      (option A also: deploy/cloudflared.env)
-#   3) the bot must be deployed first: its docker-compose.yml creates the shared network "cmt-net"
-#   4) cp deploy/deploy-console.sh ~/deploy-console.sh && chmod +x ~/deploy-console.sh
-#   5) ~/deploy-console.sh            (CMT_TUNNEL=1 ~/deploy-console.sh to run Cloudflare Tunnel as well)
-#
-# Stop everything public in one command:  sudo docker compose -f docker-compose.vm.yml stop
-#
+# Deploy the console on the VM: pull from GitHub, rebuild, restart, show the log.
+# First time: clone to ~/cmt-console, fill deploy/console.env from the example (chmod 600),
+# cp deploy/deploy-console.sh ~/ and run ~/deploy-console.sh (CMT_TUNNEL=1 for Cloudflare Tunnel).
+# Stop: sudo docker compose -f docker-compose.vm.yml stop
 set -euo pipefail
 
 REPO_DIR="${CMT_CONSOLE_DIR:-$HOME/cmt-console}"

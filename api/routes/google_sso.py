@@ -1,20 +1,12 @@
 """
-Sign-in with the company Google account (OpenID Connect, authorization-code flow).
+Sign-in with the company Google account (OpenID Connect authorization-code flow).
 
-Flow: the login screen links to /api/console/sso/google/start -> Google -> /api/console/sso/google/callback.
-The callback exchanges the one-time code for an ID token directly with Google's token endpoint over TLS
-(server to server, with the client secret). Per OpenID Connect Core 3.1.3.7 a token received that way may be
-validated by TLS instead of its signature; every claim is still checked:
-  iss = Google, aud = our client ID, not expired, nonce = the one we sent, email_verified,
-  hd (Workspace domain) in CONSOLE_GOOGLE_DOMAIN and the e-mail itself in that domain.
-Only people who already have a console account (Admin > Users, same e-mail) get in; nobody is created here.
+/api/console/sso/google/start -> Google -> /api/console/sso/google/callback. The ID token comes straight from
+Google's token endpoint; iss, aud, exp, nonce, email_verified and the Workspace domain are checked. Only existing
+console users get in.
 
-Environment:
-  GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET   OAuth client (type "Web application", consent "Internal")
-  CONSOLE_GOOGLE_DOMAIN       company Workspace domain(s), comma-separated (required: no domain = SSO off)
-  CONSOLE_PUBLIC_URL          public base URL of the console, for the redirect URI (else the request host)
-  CONSOLE_PASSWORD_LOGIN=0    turn e-mail + password sign-in off once Google sign-in works (console_auth.py)
-Redirect URI to register in Google Cloud: <CONSOLE_PUBLIC_URL>/api/console/sso/google/callback
+Environment: GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, CONSOLE_GOOGLE_DOMAIN (empty = off),
+CONSOLE_PUBLIC_URL. Redirect URI: <CONSOLE_PUBLIC_URL>/api/console/sso/google/callback
 """
 import base64
 import json

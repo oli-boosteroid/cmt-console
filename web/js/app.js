@@ -5898,9 +5898,7 @@
       .filter(function (l) { return l && !EV_NOISE.test(l); });
     return lines.join("\n") || e.text || "";
   }
-  /* ---------- Wishlist (our own, written by the bot: services/wishlist_store.py) ----------
-     Games requested from Discord, Slack, Telegram and the console, with a status per game
-     (open / problematic / rejected / added) and the Monday summaries of past weeks. */
+  /* ---------- Wishlist (data from the bot's services/wishlist_store.py) ---------- */
   var WL_TABS = [
     { key: "", label: "All" },
     { key: "open", label: "Open" },

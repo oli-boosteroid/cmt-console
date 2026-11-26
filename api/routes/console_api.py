@@ -1872,8 +1872,7 @@ def _kyiv_monday_utc():
 @console_api_bp.route("/wishlist", methods=["GET"])
 @perm_required("wishlist")
 def wishlist():
-    # Our own wishlist (written by the bot: services/wishlist_store.py). Each game carries its requests this
-    # week (Monday 00:00 Kyiv onwards) so the tab can sort and show the weekly numbers without more calls.
+    # Games with their request count for the current week (from Monday 00:00 Kyiv).
     since = _kyiv_monday_utc()
     week = {r["_id"]: r["n"] for r in M.sync_db["wishlist_requests"].aggregate([
         {"$match": {"created_at": {"$gte": since}}}, {"$group": {"_id": "$game_key", "n": {"$sum": 1}}}])}
@@ -1900,7 +1899,7 @@ def wishlist_requests():
 @console_api_bp.route("/wishlist/weekly", methods=["GET"])
 @perm_required("wishlist")
 def wishlist_weekly():
-    # Monday summaries of past weeks (written by the bot), newest first.
+    # Monday summaries, newest first.
     docs = list(M.sync_db["wishlist_weekly"].find({}).sort("_id", -1).limit(26))
     for d in docs:
         d["week"] = d.pop("_id")

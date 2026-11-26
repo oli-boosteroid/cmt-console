@@ -1,17 +1,8 @@
 """
-Public Known Issues service: ONLY the no-login pages, separate from the console.
+Public Known Issues pages only (/knownissues*, /knownissues.js, /api/console/public/*, /cmthelper/*), for running
+them in a separate container. Everything else answers 404.
 
-On the corporate VM the public Known Issues page runs as its own container from this entrypoint, so the
-part of the system that anyone on the internet can reach holds nothing else:
-  - no console pages and no console API (no login, no conversations, no admin);
-  - its own MongoDB user that may only read the published Known Issues / Game List and add suggestions,
-    feedback and rate-limit rows (see the role in docs/vm-deploy.md);
-  - nothing is published until an admin approves it in the console.
-
-Routes (all from api/routes/console_public.py): /knownissues[/<game id>], /knownissues.js,
-/api/console/public/*, /cmthelper/terms, /cmthelper/privacy. Everything else answers 404.
-
-Environment: MONGODB_URI (the public user), MONGODB_DATABASE, R2_* (screenshots), PORT.
+Environment: MONGODB_URI, MONGODB_DATABASE, R2_*, PORT.
 """
 import os
 import logging
