@@ -1,4 +1,4 @@
-# CMT Console on the VM (docs/vm-deploy.md).
+# CMT Console on the VM.
 #   docker compose -f docker-compose.vm.yml up -d --build
 #   docker compose -f docker-compose.vm.yml --profile tunnel up -d --build   # with Cloudflare Tunnel
 # The console listens on 127.0.0.1:8080. Secrets are in deploy/*.env on the VM.

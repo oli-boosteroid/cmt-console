@@ -16,3 +16,6 @@ data/
 
 # Real env files of the VM deployment (only the *.example files are tracked)
 deploy/*.env
+
+# Documentation is kept outside the repositories
+*.md
