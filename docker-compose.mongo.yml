@@ -6,8 +6,6 @@
 services:
   cmt-console:
     networks: [cmt, mongo]
-  cmt-knownissues:
-    networks: [cmt, mongo]
 
 networks:
   mongo:

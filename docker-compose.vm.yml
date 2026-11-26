@@ -1,11 +1,12 @@
 # CMT Console on the corporate VM (next to the CMT bot). See docs/vm-deploy.md.
 #
-#   docker compose -f docker-compose.vm.yml up -d --build                      # console + public Known Issues
+#   docker compose -f docker-compose.vm.yml up -d --build                      # console (+ public Known Issues page)
 #   docker compose -f docker-compose.vm.yml --profile tunnel up -d --build     # + Cloudflare Tunnel (option A)
 #
-# No port is opened to the outside: the two apps listen on 127.0.0.1 only (for a DevOps reverse proxy, option B),
-# and with the tunnel profile cloudflared reaches them over the Docker network. Secrets live in deploy/*.env on
-# the VM (never in git, never in the image).
+# No port is opened to the outside: the console listens on 127.0.0.1 only (for a DevOps reverse proxy, option B),
+# and with the tunnel profile cloudflared reaches it over the Docker network. The console also serves the public
+# Known Issues page (/knownissues, /api/console/public/*); public_app.py can run that part on its own later.
+# Secrets live in deploy/*.env on the VM (never in git, never in the image).
 
 x-hardening: &hardening
   read_only: true
@@ -30,19 +31,6 @@ services:
     ports: ["127.0.0.1:8080:8080"]
     mem_limit: 512m
     cpus: 1.0
-    networks: [cmt]
-
-  cmt-knownissues:
-    <<: *hardening
-    image: cmt-console:latest          # same image, public-only entrypoint
-    container_name: cmt-knownissues
-    depends_on: [cmt-console]
-    command: ["python", "public_app.py"]
-    env_file: ./deploy/knownissues.env
-    environment: { PORT: "8081" }
-    ports: ["127.0.0.1:8081:8081"]
-    mem_limit: 256m
-    cpus: 0.5
     networks: [cmt]
 
   cloudflared:

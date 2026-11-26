@@ -6,8 +6,8 @@
 #
 # FIRST-TIME SETUP on the VM:
 #   1) git clone the console repo to ~/cmt-console
-#   2) cp deploy/console.env.example deploy/console.env and deploy/knownissues.env.example deploy/knownissues.env,
-#      fill them in, chmod 600 deploy/*.env   (option A also: deploy/cloudflared.env)
+#   2) cp deploy/console.env.example deploy/console.env, fill it in, chmod 600 deploy/*.env
+#      (option A also: deploy/cloudflared.env)
 #   3) the bot must be deployed first: its docker-compose.yml creates the shared network "cmt-net"
 #   4) cp deploy/deploy-console.sh ~/deploy-console.sh && chmod +x ~/deploy-console.sh
 #   5) ~/deploy-console.sh            (CMT_TUNNEL=1 ~/deploy-console.sh to run Cloudflare Tunnel as well)
@@ -29,9 +29,7 @@ die() { printf '\n\033[1;31mx %s\033[0m\n' "$*" >&2; exit 1; }
 [ -d "$REPO_DIR/.git" ] || die "no git repo at $REPO_DIR (set CMT_CONSOLE_DIR)"
 [ -f "$TOKEN_FILE" ]    || die "token file $TOKEN_FILE missing"
 cd "$REPO_DIR"
-for f in deploy/console.env deploy/knownissues.env; do
-  [ -f "$f" ] || die "$f missing - copy it from $f.example and fill it in"
-done
+[ -f deploy/console.env ] || die "deploy/console.env missing - copy it from deploy/console.env.example and fill it in"
 $DOCKER network inspect cmt-net >/dev/null 2>&1 || die "network cmt-net not found - deploy the bot first"
 # Mongo in Docker on its own network: join it (MONGO_NETWORK in deploy/console.env)
 MONGO_NETWORK="${MONGO_NETWORK:-$(sed -n 's/^MONGO_NETWORK=//p' deploy/console.env | tr -d ' \r')}"

@@ -1,64 +1,73 @@
 # Running the console on the corporate VM
 
-Target: the console and the public Known Issues page run on the same VM as the CMT bot, use the MongoDB
-that already exists there, and add **no new inbound port**. People reach the console only after signing in
-with their company Google account. The console holds **no Jira, Slack, Discord, Telegram or Reddit key**.
+Target: the console (with the public Known Issues page) runs on the same VM as the CMT bot, next to our own
+MongoDB container, and adds **no new inbound port**. People reach the console only after signing in with their
+company Google account. The console holds **no Jira, Slack, Discord, Telegram or Reddit key**.
+
+Status: the bot already runs on the VM from `~/cmt-boost` (still on the old database). The console is cloned to
+`~/cmt-console` but not started. Our own MongoDB is **planned** (section "MongoDB (planned)").
 
 ## What runs where
 
 | Container | From | Reachable from outside | Mongo user | Secrets it holds |
 |---|---|---|---|---|
-| `cmt-boost` (bot) | bot repo `docker-compose.yml` | `:7000` for Slack only, as today | `cmt_bot` | all integration keys (in `.env`, mounted read-only, not in the image) |
-| `cmt-console` | console repo `docker-compose.vm.yml` | only via the tunnel/proxy, after Google sign-in | `cmt_console` | session key, Google OAuth client, R2, Jira **gateway** token |
-| `cmt-knownissues` | same image, `public_app.py` | public paths only | `cmt_public` (read published KI + add suggestions) | R2 |
-| `cmt-cloudflared` (option A) | `--profile tunnel` | outbound connection only | — | tunnel token |
+| `cmt-boost` (bot) | bot repo `docker-compose.yml` | `:7000` for Slack only | `cmt_bot` | all integration keys (in `.env`, mounted read-only, not in the image) |
+| `cmt-mongo` (planned) | bot repo, its own compose project | no (Docker network only) | - | admin password, replica-set key |
+| `cmt-console` | console repo `docker-compose.vm.yml` | only via the tunnel/proxy; console pages after Google sign-in, Known Issues pages public | `cmt_console` | session key, Google OAuth client, R2, Jira **gateway** token |
+| `cmt-cloudflared` (option A) | `--profile tunnel` | outbound connection only | - | tunnel token |
 
-- `public_app.py` serves only `/knownissues*`, `/knownissues.js`, `/knownissues-fonts/*`, `/api/console/public/*`,
-  `/cmthelper/*`; every other path answers 404.
+- The console serves the public Known Issues page itself: `/knownissues*`, `/knownissues.js`, `/knownissues-fonts/*`,
+  `/api/console/public/*`, `/cmthelper/*` answer without sign-in; every other path needs a console session.
+  `public_app.py` (public paths only) is kept so the page can run in its own container with a read-mostly
+  Mongo user if the VM gets more memory or a stricter split is required.
 - Jira: the console calls the bot's internal gateway `http://cmt-boost:7001/internal/jira` on the shared Docker
   network `cmt-net` (`services/jira_http.py` in the console, `services/jira_gateway.py` in the bot). Port 7001 is
   not published; only Jira API paths the console uses are allowed (no DELETE, no user/admin APIs), every call is
-  logged with the console user. On Railway (no `JIRA_GATEWAY_URL`) the console still calls Jira directly.
+  logged with the console user. Without `JIRA_GATEWAY_URL` the console calls Jira directly (Railway).
 - Fonts are served by the console itself (no Google Fonts).
-- All containers: read-only filesystem, non-root, no Linux capabilities, memory/CPU limits, log rotation.
+- All containers: read-only filesystem where possible, non-root, no Linux capabilities, memory/CPU limits, log rotation.
+
+## Memory budget (VM: 3.8 GB RAM, 8 CPU)
+
+| Container | Limit |
+|---|---|
+| bot | ~0.7 GB in use |
+| console | 512 MB |
+| MongoDB (planned) | WiredTiger cache 0.5 GB, container limit ~1.2 GB |
+| cloudflared (option A) | 128 MB |
+
+About 1 GB stays free for the system. Heavy data (images) belongs in R2, not in Mongo, so the working set fits
+the small cache.
 
 ## Order of the first deployment
 
-1. **DevOps / IT answers**: the admin login for the `mongodb` container (see "MongoDB" below), option A or B for
-   access, a DNS name, OAuth client "Internal" in the company Google Cloud.
-2. **Mongo users**: run the `mongosh` block below with an admin account.
+1. **Answers / setup**: option A or B for access, a DNS name, OAuth client "Internal" in the company Google Cloud.
+2. **MongoDB**: start `cmt-mongo` and create the users (section below).
 3. **Data**: `cmt-boost-main/additional_scripts/migrate_to_vm_mongo.sh rehearse`, then `compare_counts.py`; in the
    maintenance window `... final` (bot and console stopped), `compare_counts.py` again.
-4. **Bot**: put `JIRA_GATEWAY_TOKEN` (new random value) and the VM Mongo URIs (`cmt_bot`) into the bot's `.env`,
-   `~/deploy.sh`. The bot's compose creates the network `cmt-net`.
-5. **Console**: clone the console repo to `~/cmt-console`, fill `deploy/console.env` and `deploy/knownissues.env`
-   from the `*.example` files (`chmod 600 deploy/*.env`), copy `deploy/deploy-console.sh` to `~/` and run it
-   (`CMT_TUNNEL=1` for option A).
+4. **Bot**: put `JIRA_GATEWAY_TOKEN` (new random value) and the `cmt_bot` URIs into the bot's `.env`, `~/deploy.sh`.
+5. **Console**: fill `deploy/console.env` from `deploy/console.env.example` (`chmod 600 deploy/*.env`), run
+   `~/deploy-console.sh` (`CMT_TUNNEL=1` for option A).
 6. **Smoke test** (below). Then switch off Railway and, after 14 days, delete Atlas + the Railway Mongo.
 
-## MongoDB
+## MongoDB (planned)
 
-On our VM Mongo runs in Docker (container `mongodb`, `27017/tcp` not published on the host), so the containers join
-its Docker network and use `mongodb` as the host:
+Our own MongoDB container on the same VM:
 
-```bash
-sudo docker inspect mongodb --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}'   # network name
-sudo docker inspect mongodb --format '{{.Config.Cmd}}'          # --replSet <name> -> replica set (change streams)
-```
+- `mongo:7.0`, container `cmt-mongo`, on the Docker network `cmt-net`; port 27017 is **not** published, so only our
+  containers reach it (`mongodb://<user>:<password>@cmt-mongo:27017/<db>?authSource=admin&replicaSet=rs0`).
+- Its own compose project (not the bot's `docker-compose.yml`), so `~/deploy.sh` and `~/deploy-console.sh` never
+  stop or recreate the database; `restart: unless-stopped` brings it back after a VM reboot.
+- Single-node replica set `rs0` (change streams: console actions run at once instead of 3 s polling), auth on,
+  replica-set key file, data in a named Docker volume (outside the git checkout).
+- `--wiredTigerCacheSizeGB 0.5`, memory limit, log rotation; admin password and key in an env file on the VM only.
+- Databases: `reddit_posts` (main) and `reddit_snapshots` (Reddit snapshots + images).
+- Backups: none for now (owner's decision, 2026-11-26). A daily dump onto the same VM is an option; it protects
+  against deleted data, not against a lost disk.
 
-- Bot: in its `.env` set `COMPOSE_FILE=docker-compose.yml:docker-compose.mongo.yml` and `MONGO_NETWORK=<network>`.
-- Console: `MONGO_NETWORK=<network>` in `deploy/console.env`; `deploy-console.sh` then adds `docker-compose.mongo.yml`.
-- Migration: in `~/.cmt_migrate.env` `DOCKER_NETWORK=<network>` and `DST_URI=mongodb://<admin>@mongodb:27017/?authSource=admin`.
-- `mongosh` for the user setup: `sudo docker exec -it mongodb mongosh -u <admin> --authenticationDatabase admin`.
-
-If Mongo ever moves to the host instead (bound to `127.0.0.1`), the containers need `network_mode: host` or DevOps
-lets Mongo listen on the Docker bridge address (`172.17.0.1`).
-
-Databases: `reddit_posts` (main) and `reddit_snapshots` (Reddit snapshots + images). If DevOps gives one database
-only, point `MONGODB_DATABASE` and `SNAPSHOT_MONGODB_DATABASE` at the same name (collection names do not clash).
+Users (mongosh as the admin):
 
 ```javascript
-// mongosh, as an admin
 const main = "reddit_posts", snap = "reddit_snapshots";
 db.getSiblingDB("admin").createUser({ user: "cmt_bot", pwd: passwordPrompt(),
   roles: [{ role: "readWrite", db: main }, { role: "readWrite", db: snap }] });
@@ -67,52 +76,21 @@ db.getSiblingDB("admin").createUser({ user: "cmt_bot", pwd: passwordPrompt(),
 // Narrowed step by step as those writes move to the bot.
 db.getSiblingDB("admin").createUser({ user: "cmt_console", pwd: passwordPrompt(),
   roles: [{ role: "readWrite", db: main }, { role: "read", db: snap }] });
-
-// Public Known Issues page: read the published data, add suggestions/feedback, nothing else.
-db.getSiblingDB(main).createRole({ role: "cmtPublic", roles: [], privileges: [
-  { resource: { db: main, collection: "known_issues" },   actions: ["find"] },
-  { resource: { db: main, collection: "game_list" },      actions: ["find"] },
-  { resource: { db: main, collection: "known_issue_shots" }, actions: ["find"] },
-  { resource: { db: main, collection: "console_config" }, actions: ["find"] },
-  { resource: { db: main, collection: "known_issues_suggestions" }, actions: ["find", "insert", "update"] },
-  { resource: { db: main, collection: "console_feedback" }, actions: ["insert"] },
-  { resource: { db: main, collection: "console_notify_feed" }, actions: ["insert"] },
-  { resource: { db: main, collection: "console_actions" }, actions: ["insert"] },
-  { resource: { db: main, collection: "public_suggest_rate" }, actions: ["find", "insert", "createIndex"] },
-  { resource: { db: main, collection: "public_feedback_rate" }, actions: ["find", "insert", "createIndex"] },
-  { resource: { db: main, collection: "public_shot_rate" }, actions: ["find", "insert", "createIndex"] }
-]});
-db.getSiblingDB("admin").createUser({ user: "cmt_public", pwd: passwordPrompt(),
-  roles: [{ role: "cmtPublic", db: main }] });
-
-// Backups (only if DevOps does not back this Mongo up): additional_scripts/backup_mongo.sh in the bot repo
-db.getSiblingDB("admin").createUser({ user: "cmt_backup", pwd: passwordPrompt(), roles: [{ role: "backup", db: "admin" }] });
 ```
 
-The public user's `console_actions` insert is only the admin bell push for a new suggestion; the bot refuses any
-other action without a signed-in author (`cmt-boost-main/services/action_policy.py`). Check the log after the first
-day for `not authorized` lines in case a collection is missing from the role.
-
-Connection strings: `mongodb://<user>:<password>@<host>:27017/<db>?authSource=admin` (+ `&replicaSet=<name>` if it is
-a replica set; without one the bot's action worker falls back to polling every 3 s).
+The bot refuses any queued console action without a signed-in author, except the few system actions listed in
+`cmt-boost-main/services/action_policy.py`.
 
 ## Routing
 
-Option A, Cloudflare Tunnel (company Cloudflare account) - public hostname rules:
-
-| Path (regex) | Service |
-|---|---|
-| `^/(knownissues.*|api/console/public/.*|cmthelper/.*)$` | `http://cmt-knownissues:8081` |
-| everything else | `http://cmt-console:8080` |
-
+Option A, Cloudflare Tunnel (company Cloudflare account): one public hostname, service `http://cmt-console:8080`.
 Cloudflare Access: one application for the hostname with policy **Allow - emails ending in @<company domain>**,
-identity provider **Google Workspace**; a second application for the public paths above with policy **Bypass**.
-The Facebook extension posts to `/api/fb/*` with its own key: add that path to the Bypass application or give the
-extension an Access service token. The console still does its own Google sign-in and lets in only people who have
-a console account.
+identity provider **Google Workspace**; a second application with policy **Bypass** for the public paths
+`/knownissues*`, `/api/console/public/*`, `/cmthelper/*`. The Facebook extension posts to `/api/fb/*` with its own
+key: add that path to the Bypass application or give the extension an Access service token. The console still does
+its own Google sign-in and lets in only people who have a console account.
 
-Option B, DevOps reverse proxy: the same two path rules to `127.0.0.1:8081` / `127.0.0.1:8080` (both are published
-on 127.0.0.1 only).
+Option B, DevOps reverse proxy: everything to `127.0.0.1:8080` (published on 127.0.0.1 only).
 
 ## Google sign-in
 
@@ -130,5 +108,5 @@ on 127.0.0.1 only).
    `[JiraGateway] GET /rest/api/2/issue/... -> 200 (console user ...)`.
 3. `https://<host>/knownissues` opens without sign-in; `https://<host>/api/console/notes` without sign-in -> 401 or the
    Access login page.
-4. On the VM: `ss -tlnp` shows 8080/8081 only on 127.0.0.1 and nothing on 7001 outside Docker.
+4. On the VM: `ss -tlnp` shows 8080 only on 127.0.0.1, nothing on 7001 or 27017 outside Docker.
 5. Stop switch: `sudo docker compose -f docker-compose.vm.yml stop` in `~/cmt-console` - the bot keeps working.
