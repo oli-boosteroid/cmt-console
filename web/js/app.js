@@ -313,7 +313,7 @@
     return p.day + " " + _MON[parseInt(p.month, 10) - 1] + " " + p.hour + ":" + p.minute;
   }
   /* Concrete Kyiv time with the relative elapsed as a supplement, e.g. "15:40 | 18m ago". Shown
-     everywhere a timestamp appears (the elapsed time is the addition, per request). */
+     everywhere a timestamp appears (the elapsed time is the addition). */
   function timeText(v) {
     var d = _utcDate(v);
     if (!d) return v ? String(v) : "";           // mock static strings ("8m", "now") pass through
@@ -324,7 +324,7 @@
   function jiraByKey(k) { return D.jira.filter(function (j) { return j.issue_key === k; })[0]; }
   /* Jira browse URL for a key: reuse a known ticket's own url, else derive the base from any loaded
      ticket, else fall back to the team's Jira host. Used to jump straight to Jira for keys the console
-     doesn't track (item #8). */
+     doesn't track. */
   function jiraUrl(key) {
     var j = jiraByKey(key);
     if (j && j.url) return j.url;
@@ -1741,7 +1741,7 @@
   /* A toggle chip (kept separate from the status filters) that switches a section between the
      normal list and its History (items with no activity for 5+ days). Status filtering still works. */
   /* True while a search query is active. During search, list views span BOTH active and History so
-     nothing is hidden by the History partition (item #28). */
+     nothing is hidden by the History partition. */
   function searching() { return !!(state.q && state.q.trim()); }
   function historyToggle(key) {
     var on = state[key];
@@ -1908,7 +1908,7 @@
   function tgIsUnread(m) { return !readRec("telegram", m.id) && !inHistory(m.ts) && !m.ignored; }
   function tgUnread() { return (D.telegramMessages || []).filter(tgIsUnread).length; }
   /* New (unhandled) Discord moderator-mentions: counts while status is "new" and stays until the
-     mod marks it Replied or Ignored (item #14). Drives the Discord rail badge + Mentions tab badge. */
+     mod marks it Replied or Ignored. Drives the Discord rail badge + Mentions tab badge. */
   function mentionsNew() { return (D.discordMentions || []).filter(function (m) { return (m.status || "new") === "new" && !inHistory(m.ts); }).length; }
 
 
@@ -8101,10 +8101,10 @@
 
     /* Discord notification recipients + Identity authority . */
     var discordRecipients = panel("discord", "Discord recipients & Identity", (D.moderatorsDiscord || []).length || null,
-      '<div class="section-note" style="margin-bottom:8px">Extra Discord accounts (name or id, one per line) that should get moderator-mention notifications in addition to the team profiles - use this for custom recipients not tied to a person (item #10).</div>' +
+      '<div class="section-note" style="margin-bottom:8px">Extra Discord accounts (name or id, one per line) that should get moderator-mention notifications in addition to the team profiles - use this for custom recipients not tied to a person.</div>' +
       '<textarea class="f-input" data-list-key="moderators-discord" style="min-height:76px" placeholder="One Discord name or id per line">' + esc((D.moderatorsDiscord || []).join("\n")) + "</textarea>" +
       '<button class="btn primary" data-act="list-save" data-key="moderators-discord" style="margin-top:10px">' + ic("check", "ico-sm") + "Save recipients</button>" +
-      '<div class="nrow" style="margin-top:16px"><span class="ntitle">Use console Identity only<span class="muted" style="display:block;font-weight:400;font-size:12px">Ignore the .env fallback lists so only accounts set in the console get notified (item #11)</span></span><span class="nctl">' + nToggle(!!state.identityConsoleOnly, "identity-console-only") + "</span></div>");
+      '<div class="nrow" style="margin-top:16px"><span class="ntitle">Use console Identity only<span class="muted" style="display:block;font-weight:400;font-size:12px">Ignore the .env lists IGNORED_USERS and MODERATORS: only the console decides which Reddit users and Discord moderators are ours. Jira and Slack accounts always come from the console</span></span><span class="nctl">' + nToggle(!!state.identityConsoleOnly, "identity-console-only") + "</span></div>");
 
     /* Permanent whitelist for the Discord image ratelimit (the image-spam alert never fires for these). */
     var imageWhitelist = panel("shield", "Discord - image ratelimit whitelist", (D.imageWhitelistDiscord || []).length || null,
@@ -8444,8 +8444,8 @@
         if (r && r.ok) { D[target] = r.users; render(); toast("Saved"); } else toast("Save failed");
       }, function () { toast("Save failed"); });
   }
-  /* Toggle whether the console Identity is the single source of truth for bot notifications/mentions
-     (item #11): ON drops the .env fallback lists so a non-Identity account can't leak in. */
+  /* Toggle whether the console is the only source for the bot's Reddit ignore list and Discord moderators:
+     ON drops the .env lists IGNORED_USERS / MODERATORS. Jira and Slack accounts always come from the console. */
   function toggleIdentityConsoleOnly() {
     var want = !state.identityConsoleOnly;
     window.CONSOLE.put("/identity-console-only", { enabled: want }).then(function (r) {
